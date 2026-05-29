@@ -1,0 +1,348 @@
+{
+  "info": {
+    "name": "RoundPenny API",
+    "description": "RoundPenny — Round-up micro-transaction platform\n\nBase URL: http://localhost/v1\n\nPre-request Script sets `token` variable from login response.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Health",
+      "item": [
+        {
+          "name": "GET /v1/health",
+          "event": [
+            {
+              "listen": "test",
+              "script": { "exec": ["pm.test('Status 200', () => pm.response.to.have.status(200));"] }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "http://localhost/v1/health", "host": ["http://localhost"], "path": ["v1", "health"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Register",
+          "event": [
+            {
+              "listen": "test",
+              "script": { "exec": ["pm.test('Status 201', () => pm.response.to.have.status(201));"] }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Content-Type", "value": "application/json" } ],
+            "body": { "mode": "raw", "raw": "{\n  \"email\": \"demo@roundpenny.com\",\n  \"password\": \"password123\",\n  \"full_name\": \"Demo User\"\n}" },
+            "url": { "raw": "http://localhost/v1/auth/register", "host": ["http://localhost"], "path": ["v1", "auth", "register"] }
+          }
+        },
+        {
+          "name": "Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": { "exec": ["var json = pm.response.json();", "pm.collectionVariables.set('token', json.access_token);", "pm.collectionVariables.set('refresh_token', json.refresh_token);", "pm.collectionVariables.set('user_id', json.user.id);"] }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Content-Type", "value": "application/json" } ],
+            "body": { "mode": "raw", "raw": "{\n  \"email\": \"demo@roundpenny.com\",\n  \"password\": \"password123\"\n}" },
+            "url": { "raw": "http://localhost/v1/auth/login", "host": ["http://localhost"], "path": ["v1", "auth", "login"] }
+          }
+        },
+        {
+          "name": "MFA Setup",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Authorization", "value": "Bearer {{token}}" } ],
+            "url": { "raw": "http://localhost/v1/auth/mfa/setup", "host": ["http://localhost"], "path": ["v1", "auth", "mfa", "setup"] }
+          }
+        },
+        {
+          "name": "Get Profile",
+          "request": {
+            "method": "GET",
+            "header": [ { "key": "Authorization", "value": "Bearer {{token}}" } ],
+            "url": { "raw": "http://localhost/v1/auth/me", "host": ["http://localhost"], "path": ["v1", "auth", "me"] }
+          }
+        },
+        {
+          "name": "Refresh Token",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Content-Type", "value": "application/json" } ],
+            "body": { "mode": "raw", "raw": "{\n  \"refresh_token\": \"{{refresh_token}}\"\n}" },
+            "url": { "raw": "http://localhost/v1/auth/refresh", "host": ["http://localhost"], "path": ["v1", "auth", "refresh"] }
+          }
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Authorization", "value": "Bearer {{token}}" } ],
+            "url": { "raw": "http://localhost/v1/auth/logout", "host": ["http://localhost"], "path": ["v1", "auth", "logout"] }
+          }
+        },
+        {
+          "name": "KYC Submit",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Authorization", "value": "Bearer {{token}}" }, { "key": "Content-Type", "value": "application/json" } ],
+            "body": { "mode": "raw", "raw": "{\n  \"full_name\": \"Demo User\",\n  \"date_of_birth\": \"1990-01-15\",\n  \"nationality\": \"US\",\n  \"document_type\": \"passport\",\n  \"document_number\": \"AB123456\"\n}" },
+            "url": { "raw": "http://localhost/v1/auth/kyc", "host": ["http://localhost"], "path": ["v1", "auth", "kyc"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Merchants",
+      "item": [
+        {
+          "name": "Create Merchant",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Authorization", "value": "Bearer {{token}}" }, { "key": "Content-Type", "value": "application/json" } ],
+            "body": { "mode": "raw", "raw": "{\n  \"name\": \"RoundPenny Demo Store\",\n  \"email\": \"store@roundpenny.com\",\n  \"description\": \"Demo merchant for presentation\"\n}" },
+            "url": { "raw": "http://localhost/v1/merchants", "host": ["http://localhost"], "path": ["v1", "merchants"] },
+            "description": "Creates a new merchant. Response includes merchant ID for subsequent requests."
+          }
+        },
+        {
+          "name": "List Merchants",
+          "request": {
+            "method": "GET",
+            "header": [ { "key": "Authorization", "value": "Bearer {{token}}" } ],
+            "url": { "raw": "http://localhost/v1/merchants", "host": ["http://localhost"], "path": ["v1", "merchants"] }
+          }
+        },
+        {
+          "name": "Get Merchant",
+          "request": {
+            "method": "GET",
+            "header": [ { "key": "Authorization", "value": "Bearer {{token}}" } ],
+            "url": { "raw": "http://localhost/v1/merchants/{{merchant_id}}", "host": ["http://localhost"], "path": ["v1", "merchants", "{{merchant_id}}"] }
+          }
+        },
+        {
+          "name": "Update Merchant",
+          "request": {
+            "method": "PUT",
+            "header": [ { "key": "Authorization", "value": "Bearer {{token}}" }, { "key": "Content-Type", "value": "application/json" } ],
+            "body": { "mode": "raw", "raw": "{\n  \"name\": \"Updated Demo Store\",\n  \"description\": \"Updated description\"\n}" },
+            "url": { "raw": "http://localhost/v1/merchants/{{merchant_id}}", "host": ["http://localhost"], "path": ["v1", "merchants", "{{merchant_id}}"] }
+          }
+        },
+        {
+          "name": "Delete Merchant",
+          "request": {
+            "method": "DELETE",
+            "header": [ { "key": "Authorization", "value": "Bearer {{token}}" } ],
+            "url": { "raw": "http://localhost/v1/merchants/{{merchant_id}}", "host": ["http://localhost"], "path": ["v1", "merchants", "{{merchant_id}}"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Payments",
+      "item": [
+        {
+          "name": "Create Payment",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Authorization", "value": "Bearer {{token}}" }, { "key": "Content-Type", "value": "application/json" } ],
+            "body": { "mode": "raw", "raw": "{\n  \"user_id\": \"{{user_id}}\",\n  \"amount\": 25.50,\n  \"currency\": \"USD\",\n  \"payment_method\": \"card\",\n  \"description\": \"Test payment\"\n}" },
+            "url": { "raw": "http://localhost/v1/payments", "host": ["http://localhost"], "path": ["v1", "payments"] }
+          }
+        },
+        {
+          "name": "Get Payment",
+          "request": {
+            "method": "GET",
+            "header": [ { "key": "Authorization", "value": "Bearer {{token}}" } ],
+            "url": { "raw": "http://localhost/v1/payments/{{payment_id}}", "host": ["http://localhost"], "path": ["v1", "payments", "{{payment_id}}"] }
+          }
+        },
+        {
+          "name": "List Payments",
+          "request": {
+            "method": "GET",
+            "header": [ { "key": "Authorization", "value": "Bearer {{token}}" } ],
+            "url": { "raw": "http://localhost/v1/payments", "host": ["http://localhost"], "path": ["v1", "payments"] }
+          }
+        },
+        {
+          "name": "Confirm Payment",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Authorization", "value": "Bearer {{token}}" }, { "key": "Content-Type", "value": "application/json" } ],
+            "body": { "mode": "raw", "raw": "{\n  \"payment_method_id\": \"pm_mock_123\"\n}" },
+            "url": { "raw": "http://localhost/v1/payments/{{payment_id}}/confirm", "host": ["http://localhost"], "path": ["v1", "payments", "{{payment_id}}", "confirm"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Webhooks (Notification)",
+      "item": [
+        {
+          "name": "Register Webhook",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Authorization", "value": "Bearer {{token}}" }, { "key": "Content-Type", "value": "application/json" } ],
+            "body": { "mode": "raw", "raw": "{\n  \"user_id\": \"{{user_id}}\",\n  \"url\": \"https://webhook.example.com/callback\",\n  \"events\": [\"payment.completed\", \"payment.failed\"],\n  \"description\": \"Demo webhook\"\n}" },
+            "url": { "raw": "http://localhost/v1/webhooks", "host": ["http://localhost"], "path": ["v1", "webhooks"] }
+          }
+        },
+        {
+          "name": "List Webhooks",
+          "request": {
+            "method": "GET",
+            "header": [ { "key": "Authorization", "value": "Bearer {{token}}" } ],
+            "url": { "raw": "http://localhost/v1/webhooks", "host": ["http://localhost"], "path": ["v1", "webhooks"] }
+          }
+        },
+        {
+          "name": "Get Webhook",
+          "request": {
+            "method": "GET",
+            "header": [ { "key": "Authorization", "value": "Bearer {{token}}" } ],
+            "url": { "raw": "http://localhost/v1/webhooks/{{webhook_id}}", "host": ["http://localhost"], "path": ["v1", "webhooks", "{{webhook_id}}"] }
+          }
+        },
+        {
+          "name": "Delete Webhook",
+          "request": {
+            "method": "DELETE",
+            "header": [ { "key": "Authorization", "value": "Bearer {{token}}" } ],
+            "url": { "raw": "http://localhost/v1/webhooks/{{webhook_id}}", "host": ["http://localhost"], "path": ["v1", "webhooks", "{{webhook_id}}"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Analytics",
+      "item": [
+        {
+          "name": "Track Event",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Authorization", "value": "Bearer {{token}}" }, { "key": "Content-Type", "value": "application/json" } ],
+            "body": { "mode": "raw", "raw": "{\n  \"event_type\": \"page_view\",\n  \"properties\": {\n    \"page\": \"/dashboard\",\n    \"referrer\": \"direct\"\n  }\n}" },
+            "url": { "raw": "http://localhost/v1/analytics/events", "host": ["http://localhost"], "path": ["v1", "analytics", "events"] }
+          }
+        },
+        {
+          "name": "Query Events",
+          "request": {
+            "method": "GET",
+            "header": [ { "key": "Authorization", "value": "Bearer {{token}}" } ],
+            "url": { "raw": "http://localhost/v1/analytics/events?event_type=page_view&limit=10", "host": ["http://localhost"], "path": ["v1", "analytics", "events"], "query": [ { "key": "event_type", "value": "page_view" }, { "key": "limit", "value": "10" } ] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Fraud",
+      "item": [
+        {
+          "name": "Evaluate Transaction",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Authorization", "value": "Bearer {{token}}" }, { "key": "Content-Type", "value": "application/json" } ],
+            "body": { "mode": "raw", "raw": "{\n  \"user_id\": \"{{user_id}}\",\n  \"amount\": 2500.00,\n  \"currency\": \"USD\",\n  \"merchant_id\": \"{{merchant_id}}\",\n  \"ip_address\": \"192.168.1.1\"\n}" },
+            "url": { "raw": "http://localhost/v1/fraud/evaluate", "host": ["http://localhost"], "path": ["v1", "fraud", "evaluate"] }
+          }
+        },
+        {
+          "name": "List Fraud Alerts",
+          "request": {
+            "method": "GET",
+            "header": [ { "key": "Authorization", "value": "Bearer {{token}}" } ],
+            "url": { "raw": "http://localhost/v1/fraud/alerts", "host": ["http://localhost"], "path": ["v1", "fraud", "alerts"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Wallet",
+      "item": [
+        {
+          "name": "Get Wallet",
+          "request": {
+            "method": "GET",
+            "header": [ { "key": "Authorization", "value": "Bearer {{token}}" } ],
+            "url": { "raw": "http://localhost/v1/wallets/{{user_id}}", "host": ["http://localhost"], "path": ["v1", "wallets", "{{user_id}}"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Transactions",
+      "item": [
+        {
+          "name": "List Transactions",
+          "request": {
+            "method": "GET",
+            "header": [ { "key": "Authorization", "value": "Bearer {{token}}" } ],
+            "url": { "raw": "http://localhost/v1/transactions?user_id={{user_id}}", "host": ["http://localhost"], "path": ["v1", "transactions"], "query": [ { "key": "user_id", "value": "{{user_id}}" } ] }
+          }
+        },
+        {
+          "name": "Get Transaction",
+          "request": {
+            "method": "GET",
+            "header": [ { "key": "Authorization", "value": "Bearer {{token}}" } ],
+            "url": { "raw": "http://localhost/v1/transactions/{{transaction_id}}", "host": ["http://localhost"], "path": ["v1", "transactions", "{{transaction_id}}"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "User",
+      "item": [
+        {
+          "name": "Get Profile",
+          "request": {
+            "method": "GET",
+            "header": [ { "key": "Authorization", "value": "Bearer {{token}}" } ],
+            "url": { "raw": "http://localhost/v1/users/me/profile", "host": ["http://localhost"], "path": ["v1", "users", "me", "profile"] }
+          }
+        },
+        {
+          "name": "Update Profile",
+          "request": {
+            "method": "PUT",
+            "header": [ { "key": "Authorization", "value": "Bearer {{token}}" }, { "key": "Content-Type", "value": "application/json" } ],
+            "body": { "mode": "raw", "raw": "{\n  \"full_name\": \"Updated Name\",\n  \"phone\": \"+1234567890\"\n}" },
+            "url": { "raw": "http://localhost/v1/users/me/profile", "host": ["http://localhost"], "path": ["v1", "users", "me", "profile"] }
+          }
+        },
+        {
+          "name": "Update Preferences",
+          "request": {
+            "method": "PUT",
+            "header": [ { "key": "Authorization", "value": "Bearer {{token}}" }, { "key": "Content-Type", "value": "application/json" } ],
+            "body": { "mode": "raw", "raw": "{\n  \"notifications\": {\"email\": true, \"push\": false},\n  \"round_up\": {\"enabled\": true, \"method\": \"nearest_dollar\"}\n}" },
+            "url": { "raw": "http://localhost/v1/users/me/preferences", "host": ["http://localhost"], "path": ["v1", "users", "me", "preferences"] }
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    { "key": "token", "value": "" },
+    { "key": "refresh_token", "value": "" },
+    { "key": "user_id", "value": "" },
+    { "key": "merchant_id", "value": "" },
+    { "key": "payment_id", "value": "" },
+    { "key": "webhook_id", "value": "" },
+    { "key": "transaction_id", "value": "" }
+  ]
+}

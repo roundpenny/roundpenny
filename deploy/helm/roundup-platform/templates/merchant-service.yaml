@@ -1,0 +1,3 @@
+{{- $svc := .Values.merchantService -}}
+{{- $name := "merchant-service" -}}
+{{ include "roundup-platform.service-template" (dict "service" $svc "name" $name) }}

@@ -1,0 +1,149 @@
+_format_version: "3.0"
+_transform: true
+
+services:
+- name: auth-service
+  url: http://auth-service:8081
+  routes:
+  - name: health-route
+    paths:
+    - /v1/health
+    strip_path: false
+    methods:
+    - GET
+  - name: auth-routes
+    paths:
+    - /v1/auth
+    strip_path: false
+    methods:
+    - GET
+    - POST
+    - PUT
+    - DELETE
+  plugins:
+  - name: rate-limiting
+    config:
+      minute: 100
+      hour: 1000
+
+- name: transaction-service
+  url: http://transaction-service:8083
+  routes:
+  - name: transaction-routes
+    paths:
+    - /v1/transactions
+    strip_path: false
+    methods:
+    - GET
+    - POST
+  plugins:
+  - name: key-auth
+    config:
+      key_names:
+      - X-API-Key
+  - name: rate-limiting
+    config:
+      minute: 100
+      hour: 1000
+
+- name: wallet-service
+  url: http://wallet-service:8084
+  routes:
+  - name: wallet-routes
+    paths:
+    - /v1/wallets
+    strip_path: false
+  plugins:
+  - name: jwt
+    config:
+      secret_is_base64: false
+      key_claim_name: sub
+
+- name: fee-service
+  url: http://fee-service:8085
+  routes:
+  - name: fee-routes
+    paths:
+    - /v1/fees
+    strip_path: false
+
+- name: investment-service
+  url: http://investment-service:8086
+  routes:
+  - name: investment-routes
+    paths:
+    - /v1/investments
+    strip_path: false
+
+- name: payment-gateway
+  url: http://payment-gateway:8090
+  routes:
+  - name: payment-routes
+    paths:
+    - /v1/payments
+    strip_path: false
+    methods:
+    - GET
+    - POST
+  - name: payment-webhook
+    paths:
+    - /v1/webhooks/stripe
+    strip_path: false
+
+- name: notification-service
+  url: http://notification-service:8091
+  routes:
+  - name: webhook-routes
+    paths:
+    - /v1/webhooks
+    strip_path: false
+    methods:
+    - GET
+    - POST
+    - PUT
+    - DELETE
+
+- name: user-service
+  url: http://user-service:8088
+  routes:
+  - name: user-routes
+    paths:
+    - /v1/users
+    strip_path: false
+
+- name: ledger-service
+  url: http://ledger-service:8087
+  routes:
+  - name: ledger-routes
+    paths:
+    - /v1/ledger
+    strip_path: false
+
+- name: merchant-service
+  url: http://merchant-service:8092
+  routes:
+  - name: merchant-routes
+    paths:
+    - /v1/merchants
+    strip_path: false
+
+- name: analytics-service
+  url: http://analytics-service:8093
+  routes:
+  - name: analytics-routes
+    paths:
+    - /v1/analytics
+    strip_path: false
+
+- name: fraud-service
+  url: http://fraud-service:8094
+  routes:
+  - name: fraud-routes
+    paths:
+    - /v1/fraud
+    strip_path: false
+
+consumers:
+- username: anonymous
+  keyauth_credentials:
+  - key: anonymous-key

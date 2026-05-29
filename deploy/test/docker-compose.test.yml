@@ -1,0 +1,134 @@
+services:
+  auth-service:
+    environment:
+      PORT: "8081"
+      JWT_SECRET: test-secret-not-for-production
+      MIGRATIONS_DIR: /app/migrations
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "http://localhost:8081/v1/health"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+      start_period: 10s
+
+  roundup-engine:
+    environment:
+      PORT: "8082"
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "http://localhost:8082/v1/health"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+      start_period: 10s
+
+  transaction-service:
+    environment:
+      PORT: "8083"
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "http://localhost:8083/v1/health"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+      start_period: 10s
+
+  wallet-service:
+    environment:
+      PORT: "8084"
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "http://localhost:8084/v1/health"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+      start_period: 10s
+
+  fee-service:
+    environment:
+      PORT: "8085"
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "http://localhost:8085/v1/health"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+      start_period: 10s
+
+  investment-service:
+    environment:
+      PORT: "8086"
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "http://localhost:8086/v1/health"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+      start_period: 10s
+
+  ledger-service:
+    environment:
+      PORT: "8087"
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "http://localhost:8087/v1/health"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+      start_period: 10s
+
+  user-service:
+    environment:
+      PORT: "8088"
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "http://localhost:8088/v1/health"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+      start_period: 10s
+
+  notification-service:
+    environment:
+      PORT: "8091"
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "http://localhost:8091/v1/health"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+      start_period: 10s
+
+  merchant-service:
+    environment:
+      PORT: "8092"
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "http://localhost:8092/v1/health"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+      start_period: 10s
+
+  analytics-service:
+    environment:
+      PORT: "8093"
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "http://localhost:8093/v1/health"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+      start_period: 10s
+
+  fraud-service:
+    environment:
+      PORT: "8094"
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "http://localhost:8094/v1/health"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+      start_period: 10s
+
+  payment-gateway:
+    environment:
+      PORT: "8090"
+      STRIPE_API_KEY: "${STRIPE_API_KEY:-}"
+      STRIPE_WEBHOOK_SECRET: "${STRIPE_WEBHOOK_SECRET:-}"
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "http://localhost:8090/v1/health"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+      start_period: 10s

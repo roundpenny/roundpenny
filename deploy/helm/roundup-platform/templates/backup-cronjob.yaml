@@ -1,0 +1,50 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: roundup-db-backup
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: db-backup
+    {{- include "roundup-platform.labels" . | nindent 4 }}
+spec:
+  schedule: "0 2 * * 0"
+  jobTemplate:
+    spec:
+      ttlSecondsAfterFinished: 86400
+      template:
+        spec:
+          serviceAccountName: backup-sa
+          restartPolicy: OnFailure
+          containers:
+          - name: pg-dump
+            image: postgres:16-alpine
+            env:
+            - name: PGPASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: db-secret
+                  key: postgres-password
+            - name: POSTGRES_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: roundup-config
+                  key: POSTGRES_HOST
+            - name: POSTGRES_USER
+              valueFrom:
+                configMapKeyRef:
+                  name: roundup-config
+                  key: POSTGRES_USER
+            - name: POSTGRES_DB
+              value: roundup
+            - name: BACKUP_S3_BUCKET
+              value: "roundup-platform-backups"
+            command:
+            - sh
+            - -c
+            - |
+              set -e
+              DUMP_FILE="/tmp/roundup-$(date +%Y%m%d-%H%M%S).dump"
+              pg_dump -F c -f "$DUMP_FILE" -h "$POSTGRES_HOST" -U "$POSTGRES_USER" -d "$POSTGRES_DB"
+              gzip "$DUMP_FILE"
+              aws s3 cp "${DUMP_FILE}.gz" "s3://${BACKUP_S3_BUCKET}/postgres/$(basename ${DUMP_FILE}.gz)"
+              echo "Backup completed: $(basename ${DUMP_FILE}.gz)"

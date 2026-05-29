@@ -1,0 +1,10 @@
+aws_region = "us-east-1"
+environment = "production"
+
+# Database
+db_username = "roundup_admin"
+db_password = "your-secure-password-here"
+
+# Domain & SSL
+domain_name     = "api.roundup-platform.com"
+certificate_arn = "arn:aws:acm:us-east-1:123456789012:certificate/xxxx-xxxx-xxxx"

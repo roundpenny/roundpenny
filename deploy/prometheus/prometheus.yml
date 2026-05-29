@@ -1,0 +1,64 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+rule_files:
+  - "/etc/prometheus/alerts.yml"
+
+alerting:
+  alertmanagers:
+  - static_configs:
+    - targets: ["alertmanager:9093"]
+
+scrape_configs:
+  - job_name: "auth-service"
+    static_configs:
+      - targets: ["auth-service:8081"]
+
+  - job_name: "transaction-service"
+    static_configs:
+      - targets: ["transaction-service:8083"]
+
+  - job_name: "wallet-service"
+    static_configs:
+      - targets: ["wallet-service:8084"]
+
+  - job_name: "fee-service"
+    static_configs:
+      - targets: ["fee-service:8085"]
+
+  - job_name: "investment-service"
+    static_configs:
+      - targets: ["investment-service:8086"]
+
+  - job_name: "user-service"
+    static_configs:
+      - targets: ["user-service:8088"]
+
+  - job_name: "ledger-service"
+    static_configs:
+      - targets: ["ledger-service:9094"]
+
+  - job_name: "roundup-engine"
+    static_configs:
+      - targets: ["roundup-engine:9097"]
+
+  - job_name: "payment-gateway"
+    static_configs:
+      - targets: ["payment-gateway:8090"]
+
+  - job_name: "notification-service"
+    static_configs:
+      - targets: ["notification-service:8091"]
+
+  - job_name: "merchant-service"
+    static_configs:
+      - targets: ["merchant-service:8092"]
+
+  - job_name: "analytics-service"
+    static_configs:
+      - targets: ["analytics-service:8093"]
+
+  - job_name: "fraud-service"
+    static_configs:
+      - targets: ["fraud-service:8094"]

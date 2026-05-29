@@ -1,0 +1,446 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: roundup
+      POSTGRES_PASSWORD: roundup
+      POSTGRES_DB: roundup
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U roundup"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.5.0
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+
+  kafka:
+    image: confluentinc/cp-kafka:7.5.0
+    depends_on:
+      - zookeeper
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+
+  auth-service:
+    build:
+      context: .
+      dockerfile: services/auth/Dockerfile
+    depends_on:
+      postgres:
+        condition: service_healthy
+      kafka:
+        condition: service_started
+    environment:
+      DATABASE_URL: postgres://roundup:roundup@postgres:5432/roundup?sslmode=disable
+      KAFKA_BROKERS: kafka:9092
+      JWT_SECRET: roundup-dev-jwt-secret-min-32-chars!!
+      PORT: "8081"
+      MIGRATIONS_DIR: /app/migrations
+      KAFKA_TLS_ENABLED: "false"
+      CORS_ORIGINS: "http://localhost:3000,http://localhost:8080"
+      OTLP_ENDPOINT: tempo:4317
+      # TLS_CERT_FILE: /tls/cert.pem
+      # TLS_KEY_FILE: /tls/key.pem
+    ports:
+      - "8081:8081"
+    # volumes:
+    #   - ./certs:/tls:ro
+
+  roundup-engine:
+    build:
+      context: .
+      dockerfile: services/roundup-engine/Dockerfile
+    depends_on:
+      postgres:
+        condition: service_healthy
+      kafka:
+        condition: service_started
+    environment:
+      DATABASE_URL: postgres://roundup:roundup@postgres:5432/roundup?sslmode=disable
+      KAFKA_BROKERS: kafka:9092
+      JWT_SECRET: roundup-dev-jwt-secret-min-32-chars!!
+      KAFKA_TLS_ENABLED: "false"
+      CORS_ORIGINS: "http://localhost:3000,http://localhost:8080"
+      OTLP_ENDPOINT: tempo:4317
+      # TLS_CERT_FILE: /tls/cert.pem
+      # TLS_KEY_FILE: /tls/key.pem
+    ports:
+      - "8082:8082"
+    # volumes:
+    #   - ./certs:/tls:ro
+
+  transaction-service:
+    build:
+      context: .
+      dockerfile: services/transaction/Dockerfile
+    depends_on:
+      postgres:
+        condition: service_healthy
+      kafka:
+        condition: service_started
+    environment:
+      DATABASE_URL: postgres://roundup:roundup@postgres:5432/roundup?sslmode=disable
+      KAFKA_BROKERS: kafka:9092
+      JWT_SECRET: roundup-dev-jwt-secret-min-32-chars!!
+      PORT: "8083"
+      MIGRATIONS_DIR: /app/migrations
+      KAFKA_TLS_ENABLED: "false"
+      CORS_ORIGINS: "http://localhost:3000,http://localhost:8080"
+      OTLP_ENDPOINT: tempo:4317
+      # TLS_CERT_FILE: /tls/cert.pem
+      # TLS_KEY_FILE: /tls/key.pem
+    ports:
+      - "8083:8083"
+    # volumes:
+    #   - ./certs:/tls:ro
+
+  wallet-service:
+    build:
+      context: .
+      dockerfile: services/wallet/Dockerfile
+    depends_on:
+      postgres:
+        condition: service_healthy
+      kafka:
+        condition: service_started
+    environment:
+      DATABASE_URL: postgres://roundup:roundup@postgres:5432/roundup?sslmode=disable
+      KAFKA_BROKERS: kafka:9092
+      JWT_SECRET: roundup-dev-jwt-secret-min-32-chars!!
+      PORT: "8084"
+      MIGRATIONS_DIR: /app/migrations
+      KAFKA_TLS_ENABLED: "false"
+      CORS_ORIGINS: "http://localhost:3000,http://localhost:8080"
+      OTLP_ENDPOINT: tempo:4317
+      # TLS_CERT_FILE: /tls/cert.pem
+      # TLS_KEY_FILE: /tls/key.pem
+    ports:
+      - "8084:8084"
+    # volumes:
+    #   - ./certs:/tls:ro
+
+  fee-service:
+    build:
+      context: .
+      dockerfile: services/fee/Dockerfile
+    depends_on:
+      postgres:
+        condition: service_healthy
+      kafka:
+        condition: service_started
+    environment:
+      DATABASE_URL: postgres://roundup:roundup@postgres:5432/roundup?sslmode=disable
+      KAFKA_BROKERS: kafka:9092
+      JWT_SECRET: roundup-dev-jwt-secret-min-32-chars!!
+      PORT: "8085"
+      MIGRATIONS_DIR: /app/migrations
+      KAFKA_TLS_ENABLED: "false"
+      CORS_ORIGINS: "http://localhost:3000,http://localhost:8080"
+      OTLP_ENDPOINT: tempo:4317
+      # TLS_CERT_FILE: /tls/cert.pem
+      # TLS_KEY_FILE: /tls/key.pem
+    ports:
+      - "8085:8085"
+    # volumes:
+    #   - ./certs:/tls:ro
+
+  investment-service:
+    build:
+      context: .
+      dockerfile: services/investment/Dockerfile
+    depends_on:
+      postgres:
+        condition: service_healthy
+      kafka:
+        condition: service_started
+    environment:
+      DATABASE_URL: postgres://roundup:roundup@postgres:5432/roundup?sslmode=disable
+      KAFKA_BROKERS: kafka:9092
+      JWT_SECRET: roundup-dev-jwt-secret-min-32-chars!!
+      PORT: "8086"
+      MIGRATIONS_DIR: /app/migrations
+      KAFKA_TLS_ENABLED: "false"
+      CORS_ORIGINS: "http://localhost:3000,http://localhost:8080"
+      OTLP_ENDPOINT: tempo:4317
+      # TLS_CERT_FILE: /tls/cert.pem
+      # TLS_KEY_FILE: /tls/key.pem
+    ports:
+      - "8086:8086"
+    # volumes:
+    #   - ./certs:/tls:ro
+
+  user-service:
+    build:
+      context: .
+      dockerfile: services/user/Dockerfile
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgres://roundup:roundup@postgres:5432/roundup?sslmode=disable
+      JWT_SECRET: roundup-dev-jwt-secret-min-32-chars!!
+      PORT: "8088"
+      MIGRATIONS_DIR: /app/migrations
+      CORS_ORIGINS: "http://localhost:3000,http://localhost:8080"
+      OTLP_ENDPOINT: tempo:4317
+      # TLS_CERT_FILE: /tls/cert.pem
+      # TLS_KEY_FILE: /tls/key.pem
+    ports:
+      - "8088:8088"
+    # volumes:
+    #   - ./certs:/tls:ro
+
+  payment-gateway:
+    build:
+      context: .
+      dockerfile: services/payment-gateway/Dockerfile
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgres://roundup:roundup@postgres:5432/roundup?sslmode=disable
+      JWT_SECRET: roundup-dev-jwt-secret-min-32-chars!!
+      PORT: "8090"
+      MIGRATIONS_DIR: /app/migrations
+      CORS_ORIGINS: "http://localhost:3000,http://localhost:8080"
+      OTLP_ENDPOINT: tempo:4317
+      STRIPE_API_KEY: "${STRIPE_API_KEY:-}"
+      STRIPE_WEBHOOK_SECRET: "${STRIPE_WEBHOOK_SECRET:-}"
+      # TLS_CERT_FILE: /tls/cert.pem
+      # TLS_KEY_FILE: /tls/key.pem
+    ports:
+      - "8090:8090"
+    # volumes:
+    #   - ./certs:/tls:ro
+
+  fraud-service:
+    build:
+      context: .
+      dockerfile: services/fraud/Dockerfile
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgres://roundup:roundup@postgres:5432/roundup?sslmode=disable
+      JWT_SECRET: roundup-dev-jwt-secret-min-32-chars!!
+      PORT: "8094"
+      MIGRATIONS_DIR: /app/migrations
+      CORS_ORIGINS: "http://localhost:3000,http://localhost:8080"
+      OTLP_ENDPOINT: tempo:4317
+      # TLS_CERT_FILE: /tls/cert.pem
+      # TLS_KEY_FILE: /tls/key.pem
+    ports:
+      - "8094:8094"
+    # volumes:
+    #   - ./certs:/tls:ro
+
+  merchant-service:
+    build:
+      context: .
+      dockerfile: services/merchant/Dockerfile
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgres://roundup:roundup@postgres:5432/roundup?sslmode=disable
+      JWT_SECRET: roundup-dev-jwt-secret-min-32-chars!!
+      PORT: "8092"
+      MIGRATIONS_DIR: /app/migrations
+      CORS_ORIGINS: "http://localhost:3000,http://localhost:8080"
+      OTLP_ENDPOINT: tempo:4317
+      # TLS_CERT_FILE: /tls/cert.pem
+      # TLS_KEY_FILE: /tls/key.pem
+    ports:
+      - "8092:8092"
+    # volumes:
+    #   - ./certs:/tls:ro
+
+  analytics-service:
+    build:
+      context: .
+      dockerfile: services/analytics/Dockerfile
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgres://roundup:roundup@postgres:5432/roundup?sslmode=disable
+      JWT_SECRET: roundup-dev-jwt-secret-min-32-chars!!
+      PORT: "8093"
+      MIGRATIONS_DIR: /app/migrations
+      CORS_ORIGINS: "http://localhost:3000,http://localhost:8080"
+      OTLP_ENDPOINT: tempo:4317
+      # TLS_CERT_FILE: /tls/cert.pem
+      # TLS_KEY_FILE: /tls/key.pem
+    ports:
+      - "8093:8093"
+    # volumes:
+    #   - ./certs:/tls:ro
+
+  notification-service:
+    build:
+      context: .
+      dockerfile: services/notification/Dockerfile
+    depends_on:
+      postgres:
+        condition: service_healthy
+      kafka:
+        condition: service_started
+    environment:
+      DATABASE_URL: postgres://roundup:roundup@postgres:5432/roundup?sslmode=disable
+      KAFKA_BROKERS: kafka:9092
+      JWT_SECRET: roundup-dev-jwt-secret-min-32-chars!!
+      PORT: "8091"
+      MIGRATIONS_DIR: /app/migrations
+      KAFKA_TLS_ENABLED: "false"
+      CORS_ORIGINS: "http://localhost:3000,http://localhost:8080"
+      OTLP_ENDPOINT: tempo:4317
+      # TLS_CERT_FILE: /tls/cert.pem
+      # TLS_KEY_FILE: /tls/key.pem
+    ports:
+      - "8091:8091"
+    # volumes:
+    #   - ./certs:/tls:ro
+
+  ledger-service:
+    build:
+      context: .
+      dockerfile: services/ledger/Dockerfile
+    depends_on:
+      postgres:
+        condition: service_healthy
+      kafka:
+        condition: service_started
+    environment:
+      DATABASE_URL: postgres://roundup:roundup@postgres:5432/roundup?sslmode=disable
+      KAFKA_BROKERS: kafka:9092
+      JWT_SECRET: roundup-dev-jwt-secret-min-32-chars!!
+      MIGRATIONS_DIR: /app/migrations
+      KAFKA_TLS_ENABLED: "false"
+      CORS_ORIGINS: "http://localhost:3000,http://localhost:8080"
+      OTLP_ENDPOINT: tempo:4317
+      # TLS_CERT_FILE: /tls/cert.pem
+      # TLS_KEY_FILE: /tls/key.pem
+    ports:
+      - "8087:8087"
+    # volumes:
+    #   - ./certs:/tls:ro
+
+  alertmanager:
+    image: prom/alertmanager:v0.27.0
+    command:
+      - "--config.file=/etc/alertmanager/alertmanager.yml"
+    ports:
+      - "9093:9093"
+    volumes:
+      - ./deploy/alertmanager/alertmanager.yml:/etc/alertmanager/alertmanager.yml:ro
+
+  loki:
+    image: grafana/loki:3.0.0
+    command: -config.file=/etc/loki/loki-config.yaml
+    ports:
+      - "3100:3100"
+    volumes:
+      - ./deploy/loki/loki-config.yaml:/etc/loki/loki-config.yaml:ro
+
+  promtail:
+    image: grafana/promtail:3.0.0
+    command: -config.file=/etc/promtail/promtail-config.yaml
+    volumes:
+      - ./deploy/promtail/promtail-config.yaml:/etc/promtail/promtail-config.yaml:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    depends_on:
+      - loki
+
+  tempo:
+    image: grafana/tempo:2.4.0
+    command: -config.file=/etc/tempo/tempo-config.yaml
+    ports:
+      - "3200:3200"
+      - "4317:4317"
+      - "4318:4318"
+    volumes:
+      - ./deploy/tempo/tempo-config.yaml:/etc/tempo/tempo-config.yaml:ro
+
+  kong:
+    image: kong:3.5
+    depends_on:
+      auth-service:
+        condition: service_started
+      transaction-service:
+        condition: service_started
+      wallet-service:
+        condition: service_started
+      fee-service:
+        condition: service_started
+      investment-service:
+        condition: service_started
+      user-service:
+        condition: service_started
+      ledger-service:
+        condition: service_started
+      payment-gateway:
+        condition: service_started
+      notification-service:
+        condition: service_started
+      merchant-service:
+        condition: service_started
+      analytics-service:
+        condition: service_started
+      fraud-service:
+        condition: service_started
+    environment:
+      KONG_DATABASE: "off"
+      KONG_DECLARATIVE_CONFIG: /etc/kong/kong.yml
+      KONG_PROXY_ACCESS_LOG: /dev/stdout
+      KONG_PROXY_ERROR_LOG: /dev/stderr
+      KONG_ADMIN_ACCESS_LOG: /dev/stdout
+      KONG_ADMIN_ERROR_LOG: /dev/stderr
+    ports:
+      - "80:8000"
+      - "443:8443"
+      - "8001:8001"
+    volumes:
+      - ./deploy/kong/kong.yml:/etc/kong/kong.yml:ro
+
+  prometheus:
+    image: prom/prometheus:v2.52.0
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--storage.tsdb.path=/prometheus"
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./deploy/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./deploy/prometheus/alerts.yml:/etc/prometheus/alerts.yml:ro
+
+  grafana:
+    image: grafana/grafana:10.4.2
+    environment:
+      GF_SECURITY_ADMIN_PASSWORD: admin
+      GF_SECURITY_ADMIN_USER: admin
+      GF_INSTALL_PLUGINS: ""
+    ports:
+      - "3000:3000"
+    depends_on:
+      - prometheus
+    volumes:
+      - ./deploy/grafana/datasources:/etc/grafana/provisioning/datasources:ro
+      - ./deploy/grafana/dashboards:/etc/grafana/provisioning/dashboards:ro
+
+  swagger-ui:
+    image: swaggerapi/swagger-ui:v5.17.14
+    ports:
+      - "8080:8080"
+    environment:
+      SWAGGER_JSON: /docs/openapi.yaml
+    volumes:
+      - ./docs:/docs:ro

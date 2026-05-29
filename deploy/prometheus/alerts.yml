@@ -1,0 +1,57 @@
+groups:
+- name: roundup-services
+  interval: 15s
+  rules:
+  - alert: ServiceDown
+    expr: up == 0
+    for: 30s
+    labels:
+      severity: critical
+    annotations:
+      summary: "Service {{ $labels.job }} is down"
+      description: "{{ $labels.job }} has been down for more than 30 seconds"
+
+  - alert: HighErrorRate
+    expr: rate(http_requests_total{status=~"5.."}[5m]) / rate(http_requests_total[5m]) > 0.05
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      summary: "High error rate on {{ $labels.job }}"
+      description: "{{ $labels.job }} has error rate >5% for 5 minutes"
+
+  - alert: HighLatency
+    expr: histogram_quantile(0.99, rate(http_request_duration_seconds_bucket[5m])) > 1
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      summary: "High p99 latency on {{ $labels.job }}"
+      description: "{{ $labels.job }} has p99 latency >1s for 5 minutes"
+
+  - alert: HighRequestRate
+    expr: rate(http_requests_total[1m]) > 1000
+    for: 5m
+    labels:
+      severity: info
+    annotations:
+      summary: "High request rate on {{ $labels.job }}"
+      description: "{{ $labels.job }} is serving >1000 requests/s"
+
+  - alert: DatabaseDown
+    expr: pg_up == 0
+    for: 30s
+    labels:
+      severity: critical
+    annotations:
+      summary: "PostgreSQL is unreachable"
+      description: "PostgreSQL database is unreachable for more than 30 seconds"
+
+  - alert: KafkaDown
+    expr: kafka_brokers == 0
+    for: 30s
+    labels:
+      severity: critical
+    annotations:
+      summary: "Kafka broker is down"
+      description: "No Kafka brokers are available for more than 30 seconds"

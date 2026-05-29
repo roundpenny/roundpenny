@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: roundup-engine
+  namespace: roundup-platform
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: roundup-engine
+  template:
+    metadata:
+      labels:
+        app: roundup-engine
+    spec:
+      containers:
+      - name: roundup-engine
+        image: roundup/roundup-engine:latest
+        ports:
+        - containerPort: 8082
+        envFrom:
+        - configMapRef:
+            name: roundup-config
+        env:
+        - name: PORT
+          value: "8082"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8082
+          initialDelaySeconds: 5
+          periodSeconds: 10
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: roundup-engine
+  namespace: roundup-platform
+spec:
+  ports:
+  - port: 8082
+  selector:
+    app: roundup-engine

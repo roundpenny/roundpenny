@@ -1,0 +1,144 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kong-gateway
+  namespace: roundup-platform
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: kong-gateway
+  template:
+    metadata:
+      labels:
+        app: kong-gateway
+    spec:
+      containers:
+      - name: kong
+        image: kong:3.5
+        ports:
+        - containerPort: 8000
+          name: proxy
+        - containerPort: 8443
+          name: proxy-tls
+        - containerPort: 8001
+          name: admin
+        env:
+        - name: KONG_DATABASE
+          value: "off"
+        - name: KONG_DECLARATIVE_CONFIG
+          value: "/etc/kong/kong.yml"
+        - name: KONG_PROXY_ACCESS_LOG
+          value: "/dev/stdout"
+        - name: KONG_PROXY_ERROR_LOG
+          value: "/dev/stderr"
+        volumeMounts:
+        - name: kong-config
+          mountPath: /etc/kong
+      volumes:
+      - name: kong-config
+        configMap:
+          name: kong-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: kong-gateway
+  namespace: roundup-platform
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 80
+    targetPort: 8000
+    name: proxy
+  - port: 443
+    targetPort: 8443
+    name: proxy-tls
+  - port: 8001
+    targetPort: 8001
+    name: admin
+  selector:
+    app: kong-gateway
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: kong-config
+  namespace: roundup-platform
+data:
+  kong.yml: |
+    _format_version: "3.0"
+    _transform: true
+
+    services:
+    - name: auth-service
+      url: http://auth-service:8081
+      routes:
+      - name: auth-routes
+        paths:
+        - /v1/auth
+        strip_path: false
+        methods:
+        - GET
+        - POST
+        - PUT
+        - DELETE
+      plugins:
+      - name: rate-limiting
+        config:
+          minute: 30
+          hour: 300
+
+    - name: transaction-service
+      url: http://transaction-service:8083
+      routes:
+      - name: transaction-routes
+        paths:
+        - /v1/transactions
+        strip_path: false
+        methods:
+        - GET
+        - POST
+      plugins:
+      - name: key-auth
+        config:
+          key_names:
+          - X-API-Key
+      - name: rate-limiting
+        config:
+          minute: 100
+          hour: 1000
+
+    - name: wallet-service
+      url: http://wallet-service:8084
+      routes:
+      - name: wallet-routes
+        paths:
+        - /v1/wallets
+        strip_path: false
+      plugins:
+      - name: jwt
+        config:
+          secret_is_base64: false
+          key_claim_name: sub
+
+    - name: fee-service
+      url: http://fee-service:8085
+      routes:
+      - name: fee-routes
+        paths:
+        - /v1/fees
+        strip_path: false
+
+    - name: investment-service
+      url: http://investment-service:8086
+      routes:
+      - name: investment-routes
+        paths:
+        - /v1/investments
+        strip_path: false
+
+    consumers:
+    - username: anonymous
+      keyauth_credentials:
+      - key: anonymous-key

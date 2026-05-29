@@ -1,0 +1,252 @@
+name: CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+env:
+  GO_VERSION: "1.26"
+  REGISTRY: ghcr.io
+  REGISTRY_IMAGE: ghcr.io/${{ github.repository_owner }}/roundup-platform
+  TF_VERSION: "1.8"
+
+jobs:
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version: ${{ env.GO_VERSION }}
+
+      - name: golangci-lint
+        uses: golangci/golangci-lint-action@v6
+        with:
+          version: latest
+          working-directory: .
+
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        service:
+          - auth
+          - roundup-engine
+          - transaction
+          - wallet
+          - fee
+          - investment
+          - ledger
+          - user
+          - payment-gateway
+          - fraud
+          - merchant
+          - analytics
+          - notification
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version: ${{ env.GO_VERSION }}
+
+      - name: Tidy module
+        run: |
+          if [ -f "services/${{ matrix.service }}/go.mod" ]; then
+            cd services/${{ matrix.service }} && go mod tidy
+          fi
+
+      - name: Test service
+        run: |
+          if [ -f "services/${{ matrix.service }}/go.mod" ]; then
+            cd services/${{ matrix.service }} && go test ./... -count=1 -v
+          fi
+
+  build:
+    name: Build
+    needs: test
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        service:
+          - auth
+          - roundup-engine
+          - transaction
+          - wallet
+          - fee
+          - investment
+          - ledger
+          - user
+          - payment-gateway
+          - fraud
+          - merchant
+          - analytics
+          - notification
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version: ${{ env.GO_VERSION }}
+
+      - name: Build service
+        run: |
+          if [ -f "services/${{ matrix.service }}/go.mod" ]; then
+            cd services/${{ matrix.service }} && go build ./...
+          fi
+
+  docker:
+    name: Docker Build & Scan
+    needs: build
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        service:
+          - auth
+          - roundup-engine
+          - transaction
+          - wallet
+          - fee
+          - investment
+          - ledger
+          - user
+          - payment-gateway
+          - fraud
+          - merchant
+          - analytics
+          - notification
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GitHub Container Registry
+        if: github.ref == 'refs/heads/main'
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and export image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: services/${{ matrix.service }}/Dockerfile
+          tags: ${{ env.REGISTRY_IMAGE }}/${{ matrix.service }}:latest,${{ env.REGISTRY_IMAGE }}/${{ matrix.service }}:${{ github.sha }}
+          load: true
+
+      - name: Trivy security scan
+        uses: aquasecurity/trivy-action@0.24.0
+        with:
+          image-ref: ${{ env.REGISTRY_IMAGE }}/${{ matrix.service }}:latest
+          format: table
+          exit-code: 1
+          severity: HIGH,CRITICAL
+
+      - name: Push image to registry
+        if: github.ref == 'refs/heads/main'
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: services/${{ matrix.service }}/Dockerfile
+          tags: ${{ env.REGISTRY_IMAGE }}/${{ matrix.service }}:latest,${{ env.REGISTRY_IMAGE }}/${{ matrix.service }}:${{ github.sha }}
+          push: true
+
+  integration:
+    name: Integration Tests
+    needs: docker
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Docker Compose
+        run: docker compose -f docker-compose.yml -f deploy/test/docker-compose.test.yml up -d --wait --wait-timeout 120
+
+      - name: Run integration tests
+        run: ./scripts/integration_test.sh
+
+      - name: Cleanup
+        if: always()
+        run: docker compose -f docker-compose.yml -f deploy/test/docker-compose.test.yml down -v
+
+  terraform:
+    name: Terraform Provision
+    needs: integration
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: us-east-1
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ env.TF_VERSION }}
+
+      - name: Terraform Init
+        run: terraform -chdir=deploy/terraform init
+
+      - name: Terraform Plan
+        run: terraform -chdir=deploy/terraform plan -out=tfplan
+
+      - name: Terraform Apply
+        run: terraform -chdir=deploy/terraform apply -auto-approve tfplan
+
+  deploy:
+    name: Deploy
+    needs: integration
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Helm
+        uses: azure/setup-helm@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: us-east-1
+
+      - name: Deploy with Helm
+        run: |
+          helm upgrade --install roundup-platform deploy/helm/roundup-platform \
+            --namespace roundup-platform --create-namespace \
+            --set global.imageRegistry=ghcr.io/${{ github.repository_owner }} \
+            --set global.imageTag=${{ github.sha }} \
+            --set global.jwtSecret=${{ secrets.JWT_SECRET }} \
+            --wait --timeout 10m
+
+  notify:
+    name: Slack Notification
+    needs: [deploy, integration, docker, build, test, lint]
+    if: failure() && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send Slack notification
+        uses: rtCamp/action-slack-notify@v2
+        env:
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+          SLACK_TITLE: CI Pipeline Failed
+          SLACK_MESSAGE: |
+            Pipeline failed for ${{ github.repository }}
+            Commit: ${{ github.sha }}
+            Branch: ${{ github.ref }}
+            Author: ${{ github.actor }}
+            URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          SLACK_COLOR: danger
+          SLACK_FOOTER: "roundup-platform CI"

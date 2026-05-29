@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RoundPenny — Round-Up Micro-Transaction Platform</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Inter', sans-serif; background: #0a0e1a; color: #e0e6f0; line-height: 1.6; }
+    .container { max-width: 1100px; margin: 0 auto; padding: 0 24px; }
+
+    nav { display: flex; justify-content: space-between; align-items: center; padding: 20px 0; border-bottom: 1px solid #1a2040; }
+    nav .logo { font-size: 1.5em; font-weight: 800; color: #4fc3f7; }
+    nav .logo span { color: #69f0ae; }
+    nav .nav-links { display: flex; gap: 32px; font-size: 0.9em; }
+    nav .nav-links a { color: #90caf9; text-decoration: none; font-weight: 500; transition: color 0.2s; }
+    nav .nav-links a:hover { color: #4fc3f7; }
+
+    .hero { text-align: center; padding: 100px 0 60px; }
+    .hero h1 { font-size: 3.2em; font-weight: 800; line-height: 1.15; margin-bottom: 20px; }
+    .hero h1 .accent { color: #4fc3f7; }
+    .hero h1 .green { color: #69f0ae; }
+    .hero p { font-size: 1.15em; color: #90caf9; max-width: 700px; margin: 0 auto 36px; }
+    .hero .btn-group { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
+    .btn-primary { background: #4fc3f7; color: #0a0e1a; padding: 14px 36px; border-radius: 8px; font-weight: 700; font-size: 1em; text-decoration: none; transition: background 0.2s; }
+    .btn-primary:hover { background: #29b6f6; }
+    .btn-outline { border: 2px solid #4fc3f7; color: #4fc3f7; padding: 12px 36px; border-radius: 8px; font-weight: 600; font-size: 1em; text-decoration: none; transition: all 0.2s; }
+    .btn-outline:hover { background: #4fc3f7; color: #0a0e1a; }
+
+    .metrics { display: flex; justify-content: center; gap: 48px; flex-wrap: wrap; padding: 60px 0; }
+    .metric { text-align: center; }
+    .metric .num { font-size: 2.4em; font-weight: 800; color: #4fc3f7; }
+    .metric .label { font-size: 0.85em; color: #78909c; margin-top: 4px; }
+
+    section { padding: 80px 0; }
+    section h2 { font-size: 2em; font-weight: 700; text-align: center; margin-bottom: 48px; color: #e0e6f0; }
+
+    .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px; }
+    .feature-card { background: #111829; border: 1px solid #1a2040; border-radius: 12px; padding: 32px; transition: border-color 0.2s; }
+    .feature-card:hover { border-color: #4fc3f7; }
+    .feature-card .icon { font-size: 1.5em; margin-bottom: 12px; }
+    .feature-card h3 { font-size: 1.15em; font-weight: 600; margin-bottom: 8px; color: #e0e6f0; }
+    .feature-card p { font-size: 0.9em; color: #78909c; }
+
+    .pricing-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px; max-width: 960px; margin: 0 auto; }
+    .pricing-card { background: #111829; border: 1px solid #1a2040; border-radius: 12px; padding: 36px; text-align: center; transition: border-color 0.2s; }
+    .pricing-card.featured { border-color: #4fc3f7; position: relative; }
+    .pricing-card.featured::before { content: "Recommended"; position: absolute; top: -12px; left: 50%; transform: translateX(-50%); background: #4fc3f7; color: #0a0e1a; font-size: 0.75em; font-weight: 700; padding: 4px 16px; border-radius: 12px; }
+    .pricing-card h3 { font-size: 1.3em; font-weight: 700; margin-bottom: 8px; }
+    .pricing-card .price { font-size: 2.4em; font-weight: 800; color: #4fc3f7; margin: 16px 0; }
+    .pricing-card .price span { font-size: 0.45em; font-weight: 400; color: #78909c; }
+    .pricing-card ul { list-style: none; text-align: left; margin: 20px 0; }
+    .pricing-card ul li { padding: 6px 0; font-size: 0.9em; color: #90caf9; }
+    .pricing-card ul li::before { content: "▸ "; color: #4fc3f7; }
+
+    .contact { text-align: center; background: #111829; border-radius: 16px; padding: 60px; border: 1px solid #1a2040; }
+    .contact p { font-size: 1.1em; color: #90caf9; margin-bottom: 16px; }
+    .contact .email { font-size: 1.3em; font-weight: 700; color: #4fc3f7; }
+
+    footer { text-align: center; padding: 40px 0; border-top: 1px solid #1a2040; font-size: 0.85em; color: #546e7a; }
+
+    @media (max-width: 768px) {
+      .hero h1 { font-size: 2em; }
+      nav .nav-links { display: none; }
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+
+  <nav>
+    <div class="logo">Round<span>Penny</span></div>
+    <div class="nav-links">
+      <a href="#features">Features</a>
+      <a href="#pricing">Pricing</a>
+      <a href="#contact">Contact</a>
+    </div>
+  </nav>
+
+  <section class="hero">
+    <h1>Spare change investing.<br><span class="accent">Built for scale.</span></h1>
+    <p>RoundPenny is a white-label, API-first platform that turns everyday purchases into investments. Enterprise-grade infrastructure for fintechs, neobanks, and HCM platforms.</p>
+    <div class="btn-group">
+      <a href="#contact" class="btn-primary">Partner With Us</a>
+      <a href="https://github.com/lumox/roundpenny" class="btn-outline">View on GitHub</a>
+    </div>
+  </section>
+
+  <div class="metrics">
+    <div class="metric"><div class="num">13</div><div class="label">Microservices</div></div>
+    <div class="metric"><div class="num">99.9%</div><div class="label">Uptime SLA</div></div>
+    <div class="metric"><div class="num">2-3</div><div class="label">Week Integration</div></div>
+    <div class="metric"><div class="num">$1.2T</div><div class="label">Market TAM</div></div>
+  </div>
+
+  <section id="features">
+    <h2>Why RoundPenny</h2>
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="icon">🔄</div>
+        <h3>Round-Up Engine</h3>
+        <p>Auto-calculate spare change on every transaction or paycheck. Kafka-powered, real-time settlement.</p>
+      </div>
+      <div class="feature-card">
+        <div class="icon">🏪</div>
+        <h3>White-Label API</h3>
+        <p>Your brand, our infrastructure. REST API with webhooks, SDK-ready. Custom branding for every partner.</p>
+      </div>
+      <div class="feature-card">
+        <div class="icon">🔒</div>
+        <h3>KYC & MFA</h3>
+        <p>Built-in identity verification, TOTP multi-factor auth, fraud detection, and full audit ledger.</p>
+      </div>
+      <div class="feature-card">
+        <div class="icon">📊</div>
+        <h3>Observability</h3>
+        <p>Prometheus, Grafana, Loki, Tempo — full monitoring, alerting, and distributed tracing out of the box.</p>
+      </div>
+      <div class="feature-card">
+        <div class="icon">🌍</div>
+        <h3>Global Ready</h3>
+        <p>Multi-tenant architecture, 13 microservices, PostgreSQL, Kafka. Deploy anywhere — cloud or on-prem.</p>
+      </div>
+      <div class="feature-card">
+        <div class="icon">💰</div>
+        <h3>Merchant Revenue</h3>
+        <p>Unique commission model — earn from merchants while users invest. Acorns can't do this.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="pricing">
+    <h2>Pricing</h2>
+    <div class="pricing-grid">
+      <div class="pricing-card">
+        <h3>Direct</h3>
+        <div class="price">$2<span>/mo</span></div>
+        <ul>
+          <li>Round-up investing</li>
+          <li>0.25% commission per round-up</li>
+          <li>MFA & KYC included</li>
+          <li>Email support</li>
+        </ul>
+        <a href="#contact" class="btn-outline" style="display:block">Get Started</a>
+      </div>
+      <div class="pricing-card featured">
+        <h3>White-Label API</h3>
+        <div class="price">$5k<span>/mo</span></div>
+        <ul>
+          <li>Unlimited API calls</li>
+          <li>Custom branding</li>
+          <li>Dedicated support</li>
+          <li>SLA 99.9%</li>
+        </ul>
+        <a href="#contact" class="btn-primary" style="display:block">Partner With Us</a>
+      </div>
+      <div class="pricing-card">
+        <h3>Enterprise</h3>
+        <div class="price">Custom</div>
+        <ul>
+          <li>On-premise deploy</li>
+          <li>Source code access</li>
+          <li>Custom feature dev</li>
+          <li>24/7 support</li>
+        </ul>
+        <a href="#contact" class="btn-outline" style="display:block">Contact Us</a>
+      </div>
+    </div>
+  </section>
+
+  <section id="contact">
+    <div class="contact">
+      <h2 style="margin-bottom:16px">Let's Build Together</h2>
+      <p>Ready to add round-up investing to your platform?<br>We're actively onboarding neobank and HCM partners.</p>
+      <div class="email">Lumox · 05456674110</div>
+      <p style="margin-top:20px;font-size:0.85em;color:#546e7a">Response within 24 hours</p>
+    </div>
+  </section>
+
+  <footer>
+    &copy; 2026 RoundPenny. All rights reserved.
+  </footer>
+
+</div>
+</body>
+</html>

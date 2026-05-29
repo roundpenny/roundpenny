@@ -1,0 +1,29 @@
+go 1.26.3
+
+use (
+	.
+	./pkg/audit
+	./pkg/config
+	./pkg/cors
+	./pkg/crypto
+	./pkg/db
+	./pkg/event
+	./pkg/kafka
+	./pkg/monitoring
+	./pkg/stripe
+	./pkg/tls
+	./pkg/tracing
+	./services/analytics
+	./services/auth
+	./services/fee
+	./services/fraud
+	./services/investment
+	./services/ledger
+	./services/merchant
+	./services/notification
+	./services/payment-gateway
+	./services/roundup-engine
+	./services/transaction
+	./services/user
+	./services/wallet
+)

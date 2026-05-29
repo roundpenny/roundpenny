@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: transaction-service
+  namespace: roundup-platform
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: transaction-service
+  template:
+    metadata:
+      labels:
+        app: transaction-service
+    spec:
+      containers:
+      - name: transaction-service
+        image: roundup/transaction-service:latest
+        ports:
+        - containerPort: 8083
+        envFrom:
+        - configMapRef:
+            name: roundup-config
+        env:
+        - name: PORT
+          value: "8083"
+        livenessProbe:
+          httpGet:
+            path: /v1/transactions
+            port: 8083
+          initialDelaySeconds: 5
+          periodSeconds: 10
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: transaction-service
+  namespace: roundup-platform
+spec:
+  ports:
+  - port: 8083
+  selector:
+    app: transaction-service

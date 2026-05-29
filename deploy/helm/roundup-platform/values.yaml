@@ -1,0 +1,176 @@
+namespace: roundup-platform
+
+global:
+  imageRegistry: ""
+  imageTag: latest
+  imagePullPolicy: IfNotPresent
+  postgres:
+    url: "postgres://roundup:roundup@postgres:5432/roundup?sslmode=disable"
+  kafka:
+    brokers: "kafka:9092"
+  jwtSecret: "change-this-in-production-to-a-random-64-char-string"
+  migrationsDir: "/app/migrations"
+
+postgres:
+  enabled: true
+  image: postgres:16-alpine
+  port: 5432
+  database: roundup
+  user: roundup
+  password: roundup
+
+kafka:
+  enabled: true
+  image: confluentinc/cp-kafka:7.5.0
+  port: 9092
+  advertisedListeners: PLAINTEXT://kafka:9092
+
+zookeeper:
+  enabled: true
+  image: confluentinc/cp-zookeeper:7.5.0
+  port: 2181
+
+authService:
+  enabled: true
+  replicaCount: 2
+  image: roundup-platform/auth-service
+  port: 8081
+  env:
+    JWT_SECRET: ""
+    PORT: "8081"
+    MIGRATIONS_DIR: "/app/migrations"
+  resources: {}
+  livenessProbe:
+    path: /v1/auth/me
+    port: 8081
+  readinessProbe:
+    path: /v1/auth/me
+    port: 8081
+
+transactionService:
+  enabled: true
+  replicaCount: 2
+  image: roundup-platform/transaction-service
+  port: 8083
+  env:
+    PORT: "8083"
+    MIGRATIONS_DIR: "/app/migrations"
+  resources: {}
+
+walletService:
+  enabled: true
+  replicaCount: 2
+  image: roundup-platform/wallet-service
+  port: 8084
+  env:
+    PORT: "8084"
+    MIGRATIONS_DIR: "/app/migrations"
+  resources: {}
+
+feeService:
+  enabled: true
+  replicaCount: 1
+  image: roundup-platform/fee-service
+  port: 8085
+  env:
+    PORT: "8085"
+    MIGRATIONS_DIR: "/app/migrations"
+  resources: {}
+
+investmentService:
+  enabled: true
+  replicaCount: 1
+  image: roundup-platform/investment-service
+  port: 8086
+  env:
+    PORT: "8086"
+    MIGRATIONS_DIR: "/app/migrations"
+  resources: {}
+
+userService:
+  enabled: true
+  replicaCount: 2
+  image: roundup-platform/user-service
+  port: 8088
+  env:
+    JWT_SECRET: ""
+    PORT: "8088"
+    MIGRATIONS_DIR: "/app/migrations"
+  resources: {}
+  livenessProbe:
+    path: /healthz
+    port: 8088
+  readinessProbe:
+    path: /healthz
+    port: 8088
+
+ledgerService:
+  enabled: true
+  replicaCount: 1
+  image: roundup-platform/ledger-service
+  port: 9094
+  env:
+    MIGRATIONS_DIR: "/app/migrations"
+  resources: {}
+
+roundupEngine:
+  enabled: true
+  replicaCount: 1
+  image: roundup-platform/roundup-engine
+  port: 9097
+  resources: {}
+
+paymentGateway:
+  enabled: true
+  replicaCount: 2
+  image: roundup-platform/payment-gateway
+  port: 8090
+  env:
+    PORT: "8090"
+    MIGRATIONS_DIR: "/app/migrations"
+    STRIPE_API_KEY: ""
+    STRIPE_WEBHOOK_SECRET: ""
+  resources: {}
+
+notificationService:
+  enabled: true
+  replicaCount: 1
+  image: roundup-platform/notification-service
+  port: 8091
+  env:
+    PORT: "8091"
+    MIGRATIONS_DIR: "/app/migrations"
+  resources: {}
+
+merchantService:
+  enabled: true
+  replicaCount: 2
+  image: roundup-platform/merchant-service
+  port: 8092
+  env:
+    JWT_SECRET: ""
+    PORT: "8092"
+    MIGRATIONS_DIR: "/app/migrations"
+  resources: {}
+
+analyticsService:
+  enabled: true
+  replicaCount: 1
+  image: roundup-platform/analytics-service
+  port: 8093
+  env:
+    JWT_SECRET: ""
+    PORT: "8093"
+    MIGRATIONS_DIR: "/app/migrations"
+  resources: {}
+
+fraudService:
+  enabled: true
+  replicaCount: 2
+  image: roundup-platform/fraud-service
+  port: 8094
+  env:
+    JWT_SECRET: ""
+    PORT: "8094"
+    MIGRATIONS_DIR: "/app/migrations"
+  resources: {}

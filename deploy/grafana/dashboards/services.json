@@ -1,0 +1,580 @@
+{
+  "title": "Roundup Platform Services",
+  "uid": "roundup-platform-services",
+  "version": 1,
+  "schemaVersion": 38,
+  "panels": [
+    {
+      "title": "Auth Service",
+      "type": "row",
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 0 },
+      "collapsed": true,
+      "panels": [
+        {
+          "title": "HTTP Request Rate",
+          "type": "graph",
+          "datasource": "Prometheus",
+          "gridPos": { "h": 8, "w": 8, "x": 0, "y": 1 },
+          "targets": [
+            {
+              "expr": "rate(http_requests_total{service=\"auth\"}[5m])",
+              "legendFormat": "{{method}} {{path}}"
+            }
+          ]
+        },
+        {
+          "title": "Error Rate",
+          "type": "graph",
+          "datasource": "Prometheus",
+          "gridPos": { "h": 8, "w": 8, "x": 8, "y": 1 },
+          "targets": [
+            {
+              "expr": "rate(http_requests_total{service=\"auth\",status=~\"5..\"}[5m])",
+              "legendFormat": "{{method}} {{path}}"
+            }
+          ]
+        },
+        {
+          "title": "Request Duration (p99)",
+          "type": "graph",
+          "datasource": "Prometheus",
+          "gridPos": { "h": 8, "w": 8, "x": 16, "y": 1 },
+          "targets": [
+            {
+              "expr": "histogram_quantile(0.99, rate(http_request_duration_seconds_bucket{service=\"auth\"}[5m]))",
+              "legendFormat": "{{method}} {{path}}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Transaction Service",
+      "type": "row",
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 1 },
+      "collapsed": true,
+      "panels": [
+        {
+          "title": "HTTP Request Rate",
+          "type": "graph",
+          "datasource": "Prometheus",
+          "gridPos": { "h": 8, "w": 8, "x": 0, "y": 2 },
+          "targets": [
+            {
+              "expr": "rate(http_requests_total{service=\"transaction\"}[5m])",
+              "legendFormat": "{{method}} {{path}}"
+            }
+          ]
+        },
+        {
+          "title": "Error Rate",
+          "type": "graph",
+          "datasource": "Prometheus",
+          "gridPos": { "h": 8, "w": 8, "x": 8, "y": 2 },
+          "targets": [
+            {
+              "expr": "rate(http_requests_total{service=\"transaction\",status=~\"5..\"}[5m])",
+              "legendFormat": "{{method}} {{path}}"
+            }
+          ]
+        },
+        {
+          "title": "Request Duration (p99)",
+          "type": "graph",
+          "datasource": "Prometheus",
+          "gridPos": { "h": 8, "w": 8, "x": 16, "y": 2 },
+          "targets": [
+            {
+              "expr": "histogram_quantile(0.99, rate(http_request_duration_seconds_bucket{service=\"transaction\"}[5m]))",
+              "legendFormat": "{{method}} {{path}}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Wallet Service",
+      "type": "row",
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 2 },
+      "collapsed": true,
+      "panels": [
+        {
+          "title": "HTTP Request Rate",
+          "type": "graph",
+          "datasource": "Prometheus",
+          "gridPos": { "h": 8, "w": 8, "x": 0, "y": 3 },
+          "targets": [
+            {
+              "expr": "rate(http_requests_total{service=\"wallet\"}[5m])",
+              "legendFormat": "{{method}} {{path}}"
+            }
+          ]
+        },
+        {
+          "title": "Error Rate",
+          "type": "graph",
+          "datasource": "Prometheus",
+          "gridPos": { "h": 8, "w": 8, "x": 8, "y": 3 },
+          "targets": [
+            {
+              "expr": "rate(http_requests_total{service=\"wallet\",status=~\"5..\"}[5m])",
+              "legendFormat": "{{method}} {{path}}"
+            }
+          ]
+        },
+        {
+          "title": "Request Duration (p99)",
+          "type": "graph",
+          "datasource": "Prometheus",
+          "gridPos": { "h": 8, "w": 8, "x": 16, "y": 3 },
+          "targets": [
+            {
+              "expr": "histogram_quantile(0.99, rate(http_request_duration_seconds_bucket{service=\"wallet\"}[5m]))",
+              "legendFormat": "{{method}} {{path}}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Fee Service",
+      "type": "row",
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 3 },
+      "collapsed": true,
+      "panels": [
+        {
+          "title": "HTTP Request Rate",
+          "type": "graph",
+          "datasource": "Prometheus",
+          "gridPos": { "h": 8, "w": 8, "x": 0, "y": 4 },
+          "targets": [
+            {
+              "expr": "rate(http_requests_total{service=\"fee\"}[5m])",
+              "legendFormat": "{{method}} {{path}}"
+            }
+          ]
+        },
+        {
+          "title": "Error Rate",
+          "type": "graph",
+          "datasource": "Prometheus",
+          "gridPos": { "h": 8, "w": 8, "x": 8, "y": 4 },
+          "targets": [
+            {
+              "expr": "rate(http_requests_total{service=\"fee\",status=~\"5..\"}[5m])",
+              "legendFormat": "{{method}} {{path}}"
+            }
+          ]
+        },
+        {
+          "title": "Request Duration (p99)",
+          "type": "graph",
+          "datasource": "Prometheus",
+          "gridPos": { "h": 8, "w": 8, "x": 16, "y": 4 },
+          "targets": [
+            {
+              "expr": "histogram_quantile(0.99, rate(http_request_duration_seconds_bucket{service=\"fee\"}[5m]))",
+              "legendFormat": "{{method}} {{path}}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Investment Service",
+      "type": "row",
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 4 },
+      "collapsed": true,
+      "panels": [
+        {
+          "title": "HTTP Request Rate",
+          "type": "graph",
+          "datasource": "Prometheus",
+          "gridPos": { "h": 8, "w": 8, "x": 0, "y": 5 },
+          "targets": [
+            {
+              "expr": "rate(http_requests_total{service=\"investment\"}[5m])",
+              "legendFormat": "{{method}} {{path}}"
+            }
+          ]
+        },
+        {
+          "title": "Error Rate",
+          "type": "graph",
+          "datasource": "Prometheus",
+          "gridPos": { "h": 8, "w": 8, "x": 8, "y": 5 },
+          "targets": [
+            {
+              "expr": "rate(http_requests_total{service=\"investment\",status=~\"5..\"}[5m])",
+              "legendFormat": "{{method}} {{path}}"
+            }
+          ]
+        },
+        {
+          "title": "Request Duration (p99)",
+          "type": "graph",
+          "datasource": "Prometheus",
+          "gridPos": { "h": 8, "w": 8, "x": 16, "y": 5 },
+          "targets": [
+            {
+              "expr": "histogram_quantile(0.99, rate(http_request_duration_seconds_bucket{service=\"investment\"}[5m]))",
+              "legendFormat": "{{method}} {{path}}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "User Service",
+      "type": "row",
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 5 },
+      "collapsed": true,
+      "panels": [
+        {
+          "title": "HTTP Request Rate",
+          "type": "graph",
+          "datasource": "Prometheus",
+          "gridPos": { "h": 8, "w": 8, "x": 0, "y": 6 },
+          "targets": [
+            {
+              "expr": "rate(http_requests_total{service=\"user\"}[5m])",
+              "legendFormat": "{{method}} {{path}}"
+            }
+          ]
+        },
+        {
+          "title": "Error Rate",
+          "type": "graph",
+          "datasource": "Prometheus",
+          "gridPos": { "h": 8, "w": 8, "x": 8, "y": 6 },
+          "targets": [
+            {
+              "expr": "rate(http_requests_total{service=\"user\",status=~\"5..\"}[5m])",
+              "legendFormat": "{{method}} {{path}}"
+            }
+          ]
+        },
+        {
+          "title": "Request Duration (p99)",
+          "type": "graph",
+          "datasource": "Prometheus",
+          "gridPos": { "h": 8, "w": 8, "x": 16, "y": 6 },
+          "targets": [
+            {
+              "expr": "histogram_quantile(0.99, rate(http_request_duration_seconds_bucket{service=\"user\"}[5m]))",
+              "legendFormat": "{{method}} {{path}}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Ledger Service",
+      "type": "row",
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 6 },
+      "collapsed": true,
+      "panels": [
+        {
+          "title": "Event Processing Rate",
+          "type": "graph",
+          "datasource": "Prometheus",
+          "gridPos": { "h": 8, "w": 8, "x": 0, "y": 7 },
+          "targets": [
+            {
+              "expr": "rate(events_processed_total{service=\"ledger\"}[5m])",
+              "legendFormat": "{{topic}}"
+            }
+          ]
+        },
+        {
+          "title": "Error Rate",
+          "type": "graph",
+          "datasource": "Prometheus",
+          "gridPos": { "h": 8, "w": 8, "x": 8, "y": 7 },
+          "targets": [
+            {
+              "expr": "rate(events_processed_total{service=\"ledger\",status=\"error\"}[5m])",
+              "legendFormat": "{{topic}}"
+            }
+          ]
+        },
+        {
+          "title": "Processing Duration",
+          "type": "graph",
+          "datasource": "Prometheus",
+          "gridPos": { "h": 8, "w": 8, "x": 16, "y": 7 },
+          "targets": [
+            {
+              "expr": "rate(event_processing_duration_seconds_sum{service=\"ledger\"}[5m])",
+              "legendFormat": "{{topic}}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Roundup Engine",
+      "type": "row",
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 7 },
+      "collapsed": true,
+      "panels": [
+        {
+          "title": "Roundups Processed",
+          "type": "graph",
+          "datasource": "Prometheus",
+          "gridPos": { "h": 8, "w": 8, "x": 0, "y": 8 },
+          "targets": [
+            {
+              "expr": "rate(roundups_processed_total{service=\"roundup_engine\"}[5m])",
+              "legendFormat": "total"
+            }
+          ]
+        },
+        {
+          "title": "Error Rate",
+          "type": "graph",
+          "datasource": "Prometheus",
+          "gridPos": { "h": 8, "w": 8, "x": 8, "y": 8 },
+          "targets": [
+            {
+              "expr": "rate(roundups_processed_total{service=\"roundup_engine\",status=\"error\"}[5m])",
+              "legendFormat": "errors"
+            }
+          ]
+        },
+        {
+          "title": "Processing Duration",
+          "type": "graph",
+          "datasource": "Prometheus",
+          "gridPos": { "h": 8, "w": 8, "x": 16, "y": 8 },
+          "targets": [
+            {
+              "expr": "rate(roundup_processing_duration_seconds_sum{service=\"roundup_engine\"}[5m])",
+              "legendFormat": "duration"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Payment Gateway",
+      "type": "row",
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 8 },
+      "collapsed": true,
+      "panels": [
+        {
+          "title": "HTTP Request Rate",
+          "type": "graph",
+          "datasource": "Prometheus",
+          "gridPos": { "h": 8, "w": 8, "x": 0, "y": 9 },
+          "targets": [
+            {
+              "expr": "rate(http_requests_total{service=\"payment-gateway\"}[5m])",
+              "legendFormat": "{{method}} {{path}}"
+            }
+          ]
+        },
+        {
+          "title": "Error Rate",
+          "type": "graph",
+          "datasource": "Prometheus",
+          "gridPos": { "h": 8, "w": 8, "x": 8, "y": 9 },
+          "targets": [
+            {
+              "expr": "rate(http_requests_total{service=\"payment-gateway\",status=~\"5..\"}[5m])",
+              "legendFormat": "{{method}} {{path}}"
+            }
+          ]
+        },
+        {
+          "title": "Request Duration (p99)",
+          "type": "graph",
+          "datasource": "Prometheus",
+          "gridPos": { "h": 8, "w": 8, "x": 16, "y": 9 },
+          "targets": [
+            {
+              "expr": "histogram_quantile(0.99, rate(http_request_duration_seconds_bucket{service=\"payment-gateway\"}[5m]))",
+              "legendFormat": "{{method}} {{path}}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Notification Service",
+      "type": "row",
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 9 },
+      "collapsed": true,
+      "panels": [
+        {
+          "title": "HTTP Request Rate",
+          "type": "graph",
+          "datasource": "Prometheus",
+          "gridPos": { "h": 8, "w": 8, "x": 0, "y": 10 },
+          "targets": [
+            {
+              "expr": "rate(http_requests_total{service=\"notification\"}[5m])",
+              "legendFormat": "{{method}} {{path}}"
+            }
+          ]
+        },
+        {
+          "title": "Error Rate",
+          "type": "graph",
+          "datasource": "Prometheus",
+          "gridPos": { "h": 8, "w": 8, "x": 8, "y": 10 },
+          "targets": [
+            {
+              "expr": "rate(http_requests_total{service=\"notification\",status=~\"5..\"}[5m])",
+              "legendFormat": "{{method}} {{path}}"
+            }
+          ]
+        },
+        {
+          "title": "Request Duration (p99)",
+          "type": "graph",
+          "datasource": "Prometheus",
+          "gridPos": { "h": 8, "w": 8, "x": 16, "y": 10 },
+          "targets": [
+            {
+              "expr": "histogram_quantile(0.99, rate(http_request_duration_seconds_bucket{service=\"notification\"}[5m]))",
+              "legendFormat": "{{method}} {{path}}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Merchant Service",
+      "type": "row",
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 10 },
+      "collapsed": true,
+      "panels": [
+        {
+          "title": "HTTP Request Rate",
+          "type": "graph",
+          "datasource": "Prometheus",
+          "gridPos": { "h": 8, "w": 8, "x": 0, "y": 11 },
+          "targets": [
+            {
+              "expr": "rate(http_requests_total{service=\"merchant\"}[5m])",
+              "legendFormat": "{{method}} {{path}}"
+            }
+          ]
+        },
+        {
+          "title": "Error Rate",
+          "type": "graph",
+          "datasource": "Prometheus",
+          "gridPos": { "h": 8, "w": 8, "x": 8, "y": 11 },
+          "targets": [
+            {
+              "expr": "rate(http_requests_total{service=\"merchant\",status=~\"5..\"}[5m])",
+              "legendFormat": "{{method}} {{path}}"
+            }
+          ]
+        },
+        {
+          "title": "Request Duration (p99)",
+          "type": "graph",
+          "datasource": "Prometheus",
+          "gridPos": { "h": 8, "w": 8, "x": 16, "y": 11 },
+          "targets": [
+            {
+              "expr": "histogram_quantile(0.99, rate(http_request_duration_seconds_bucket{service=\"merchant\"}[5m]))",
+              "legendFormat": "{{method}} {{path}}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Analytics Service",
+      "type": "row",
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 11 },
+      "collapsed": true,
+      "panels": [
+        {
+          "title": "HTTP Request Rate",
+          "type": "graph",
+          "datasource": "Prometheus",
+          "gridPos": { "h": 8, "w": 8, "x": 0, "y": 12 },
+          "targets": [
+            {
+              "expr": "rate(http_requests_total{service=\"analytics\"}[5m])",
+              "legendFormat": "{{method}} {{path}}"
+            }
+          ]
+        },
+        {
+          "title": "Error Rate",
+          "type": "graph",
+          "datasource": "Prometheus",
+          "gridPos": { "h": 8, "w": 8, "x": 8, "y": 12 },
+          "targets": [
+            {
+              "expr": "rate(http_requests_total{service=\"analytics\",status=~\"5..\"}[5m])",
+              "legendFormat": "{{method}} {{path}}"
+            }
+          ]
+        },
+        {
+          "title": "Request Duration (p99)",
+          "type": "graph",
+          "datasource": "Prometheus",
+          "gridPos": { "h": 8, "w": 8, "x": 16, "y": 12 },
+          "targets": [
+            {
+              "expr": "histogram_quantile(0.99, rate(http_request_duration_seconds_bucket{service=\"analytics\"}[5m]))",
+              "legendFormat": "{{method}} {{path}}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Fraud Service",
+      "type": "row",
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 12 },
+      "collapsed": true,
+      "panels": [
+        {
+          "title": "HTTP Request Rate",
+          "type": "graph",
+          "datasource": "Prometheus",
+          "gridPos": { "h": 8, "w": 8, "x": 0, "y": 13 },
+          "targets": [
+            {
+              "expr": "rate(http_requests_total{service=\"fraud\"}[5m])",
+              "legendFormat": "{{method}} {{path}}"
+            }
+          ]
+        },
+        {
+          "title": "Error Rate",
+          "type": "graph",
+          "datasource": "Prometheus",
+          "gridPos": { "h": 8, "w": 8, "x": 8, "y": 13 },
+          "targets": [
+            {
+              "expr": "rate(http_requests_total{service=\"fraud\",status=~\"5..\"}[5m])",
+              "legendFormat": "{{method}} {{path}}"
+            }
+          ]
+        },
+        {
+          "title": "Request Duration (p99)",
+          "type": "graph",
+          "datasource": "Prometheus",
+          "gridPos": { "h": 8, "w": 8, "x": 16, "y": 13 },
+          "targets": [
+            {
+              "expr": "histogram_quantile(0.99, rate(http_request_duration_seconds_bucket{service=\"fraud\"}[5m]))",
+              "legendFormat": "{{method}} {{path}}"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
