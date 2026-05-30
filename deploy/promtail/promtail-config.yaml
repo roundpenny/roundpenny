@@ -1,3 +1,5 @@
+# Copyright (c) 2026 RoundPenny. All rights reserved.
+
 server:
   http_listen_port: 9080
   grpc_listen_port: 0

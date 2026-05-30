@@ -1,4 +1,5 @@
 #!/bin/bash
+# Copyright (c) 2026 RoundPenny. All rights reserved.
 # Production-grade load test
 set -euo pipefail
 

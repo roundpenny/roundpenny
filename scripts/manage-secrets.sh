@@ -1,4 +1,5 @@
 #!/bin/bash
+# Copyright (c) 2026 RoundPenny. All rights reserved.
 # Usage: ./scripts/manage-secrets.sh encrypt|decrypt <input> <output>
 # Uses AES-256-CBC via OpenSSL
 

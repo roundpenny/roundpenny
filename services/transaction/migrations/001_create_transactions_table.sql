@@ -1,3 +1,5 @@
+-- Copyright (c) 2026 RoundPenny. All rights reserved.
+
 CREATE TABLE IF NOT EXISTS transactions (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     user_id UUID NOT NULL,

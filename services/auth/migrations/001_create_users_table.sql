@@ -1,3 +1,5 @@
+-- Copyright (c) 2026 RoundPenny. All rights reserved.
+
 CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 
 CREATE TABLE IF NOT EXISTS users (

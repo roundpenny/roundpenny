@@ -1,3 +1,5 @@
+-- Copyright (c) 2026 RoundPenny. All rights reserved.
+
 CREATE TABLE IF NOT EXISTS user_profiles (
     user_id UUID PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
     avatar_url VARCHAR(500),

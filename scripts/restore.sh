@@ -1,4 +1,5 @@
 #!/bin/bash
+# Copyright (c) 2026 RoundPenny. All rights reserved.
 set -euo pipefail
 
 BACKUP_FILE="${1:?Usage: $0 <backup-file>}"

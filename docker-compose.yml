@@ -1,3 +1,5 @@
+# Copyright (c) 2026 RoundPenny. All rights reserved.
+
 services:
   redis:
     image: redis:7-alpine

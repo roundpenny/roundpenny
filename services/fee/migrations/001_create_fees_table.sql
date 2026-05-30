@@ -1,3 +1,5 @@
+-- Copyright (c) 2026 RoundPenny. All rights reserved.
+
 CREATE TABLE IF NOT EXISTS fee_configs (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     name VARCHAR(100) NOT NULL,

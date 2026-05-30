@@ -1,3 +1,5 @@
+# Copyright (c) 2026 RoundPenny. All rights reserved.
+
 FROM golang:1.26-alpine AS builder
 WORKDIR /app/services/roundup-engine
 COPY services/roundup-engine/go.mod ./

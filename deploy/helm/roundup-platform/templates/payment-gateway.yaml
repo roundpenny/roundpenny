@@ -1,3 +1,5 @@
+# Copyright (c) 2026 RoundPenny. All rights reserved.
+
 {{- $svc := .Values.paymentGateway -}}
 {{- $name := "payment-gateway" -}}
 {{ include "roundup-platform.service-template" (dict "service" $svc "name" $name) }}

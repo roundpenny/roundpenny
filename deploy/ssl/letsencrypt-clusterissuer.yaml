@@ -1,3 +1,5 @@
+# Copyright (c) 2026 RoundPenny. All rights reserved.
+
 apiVersion: cert-manager.io/v1
 kind: ClusterIssuer
 metadata:

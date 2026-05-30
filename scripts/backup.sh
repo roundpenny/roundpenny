@@ -1,4 +1,5 @@
 #!/bin/bash
+# Copyright (c) 2026 RoundPenny. All rights reserved.
 set -euo pipefail
 
 DB_HOST="${1:-localhost}"

@@ -1,4 +1,5 @@
 #!/bin/bash
+# Copyright (c) 2026 RoundPenny. All rights reserved.
 # Initial Let's Encrypt certificate setup
 # Usage: ./init-letsencrypt.sh <domain> <email>
 set -euo pipefail

@@ -1,3 +1,5 @@
+-- Copyright (c) 2026 RoundPenny. All rights reserved.
+
 ALTER TABLE portfolios ADD COLUMN IF NOT EXISTS deleted_at TIMESTAMPTZ;
 ALTER TABLE investments ADD COLUMN IF NOT EXISTS deleted_at TIMESTAMPTZ;
 

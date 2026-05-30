@@ -1,3 +1,5 @@
+# Copyright (c) 2026 RoundPenny. All rights reserved.
+
 FROM golang:1.26-alpine AS builder
 WORKDIR /app/services/auth
 COPY services/auth/go.mod ./

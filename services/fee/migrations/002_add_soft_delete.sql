@@ -1,3 +1,5 @@
+-- Copyright (c) 2026 RoundPenny. All rights reserved.
+
 ALTER TABLE fee_configs ADD COLUMN IF NOT EXISTS deleted_at TIMESTAMPTZ;
 ALTER TABLE fee_transactions ADD COLUMN IF NOT EXISTS deleted_at TIMESTAMPTZ;
 

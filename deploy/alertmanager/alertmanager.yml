@@ -1,3 +1,5 @@
+# Copyright (c) 2026 RoundPenny. All rights reserved.
+
 global:
   resolve_timeout: 5m
   smtp_smarthost: "${SMTP_HOST:-smtp.example.com:587}"

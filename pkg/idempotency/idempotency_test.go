@@ -1,3 +1,5 @@
+// Copyright (c) 2026 RoundPenny. All rights reserved.
+
 package idempotency
 
 import (

@@ -1,3 +1,5 @@
+-- Copyright (c) 2026 RoundPenny. All rights reserved.
+
 ALTER TABLE transactions ADD COLUMN IF NOT EXISTS deleted_at TIMESTAMPTZ;
 ALTER TABLE transaction_roundups ADD COLUMN IF NOT EXISTS deleted_at TIMESTAMPTZ;
 

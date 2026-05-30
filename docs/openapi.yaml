@@ -1,3 +1,5 @@
+# Copyright (c) 2026 RoundPenny. All rights reserved.
+
 openapi: "3.0.3"
 info:
   title: RoundPenny API

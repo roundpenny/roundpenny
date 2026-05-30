@@ -1,4 +1,5 @@
 #!/bin/sh
+# Copyright (c) 2026 RoundPenny. All rights reserved.
 set -e
 
 BASE_URL="${BASE_URL:-http://kong:8000}"

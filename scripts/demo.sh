@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# Copyright (c) 2026 RoundPenny. All rights reserved.
 set -e
 
 BASE="${BASE_URL:-http://localhost}"

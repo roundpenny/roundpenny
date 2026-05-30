@@ -1,3 +1,5 @@
+# Copyright (c) 2026 RoundPenny. All rights reserved.
+
 groups:
 - name: roundup-services
   interval: 15s

@@ -1,3 +1,5 @@
+# Copyright (c) 2026 RoundPenny. All rights reserved.
+
 apiVersion: batch/v1
 kind: CronJob
 metadata:

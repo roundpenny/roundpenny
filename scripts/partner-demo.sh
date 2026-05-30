@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# Copyright (c) 2026 RoundPenny. All rights reserved.
 # RoundPenny Partner Demo
 # Run: bash scripts/partner-demo.sh
 set -e
