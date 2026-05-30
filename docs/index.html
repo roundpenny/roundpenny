@@ -140,6 +140,34 @@
     .security-badge .name { font-size: 0.8em; font-weight: 600; color: #e0e6f0; }
     .security-badge .desc { font-size: 0.7em; color: #546e7a; margin-top: 4px; }
 
+    .investor-metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; margin-bottom: 48px; }
+    .investor-metric { background: #0d1326; border: 1px solid #1a2040; border-radius: 14px; padding: 28px; text-align: center; transition: border-color 0.3s; }
+    .investor-metric:hover { border-color: #4fc3f7; }
+    .investor-metric .num { font-size: 2em; font-weight: 800; color: #4fc3f7; }
+    .investor-metric .num .currency { font-size: 0.6em; color: #546e7a; }
+    .investor-metric .label { font-size: 0.85em; color: #78909c; margin-top: 4px; }
+    .investor-metric .src { font-size: 0.7em; color: #2a3050; margin-top: 6px; }
+    .investor-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 48px; }
+    .investor-card { background: #0d1326; border: 1px solid #1a2040; border-radius: 14px; padding: 32px; transition: border-color 0.3s; }
+    .investor-card:hover { border-color: #4fc3f7; }
+    .investor-card .icon { font-size: 1.8em; margin-bottom: 12px; }
+    .investor-card h3 { font-size: 1.05em; font-weight: 600; margin-bottom: 8px; }
+    .investor-card p, .investor-card li { font-size: 0.88em; color: #78909c; line-height: 1.7; }
+    .investor-card ul { list-style: none; padding: 0; }
+    .investor-card ul li { padding: 6px 0; border-bottom: 1px solid #1a2040; }
+    .investor-card ul li:last-child { border-bottom: none; }
+    .investor-card ul li::before { content: "✓ "; color: #69f0ae; font-weight: 600; }
+    .investor-card .highlight { color: #4fc3f7; font-weight: 600; }
+    .compare-table { width: 100%; border-collapse: collapse; font-size: 0.88em; }
+    .compare-table th, .compare-table td { padding: 12px 16px; text-align: left; border-bottom: 1px solid #1a2040; }
+    .compare-table th { color: #546e7a; font-weight: 500; font-size: 0.8em; letter-spacing: 1px; }
+    .compare-table td { color: #78909c; }
+    .compare-table td:first-child { color: #e0e6f0; font-weight: 500; }
+    .compare-table .yes { color: #69f0ae; }
+    .compare-table .no { color: #ff5252; }
+    .compare-table tr:hover td { background: #0a0f1e; }
+    .compare-card { overflow-x: auto; }
+    @media (max-width: 768px) { .investor-grid { grid-template-columns: 1fr; } }
     footer { text-align: center; padding: 48px 0; border-top: 1px solid #1a2040; }
     footer .footer-links { display: flex; flex-wrap: wrap; justify-content: center; gap: 24px; margin-bottom: 20px; }
     footer .footer-links a { color: #546e7a; text-decoration: none; font-size: 0.85em; transition: color 0.2s; }
@@ -189,6 +217,7 @@
       <a href="#roadmap">Roadmap</a>
       <a href="#faq">FAQ</a>
       <a href="#security">Security</a>
+      <a href="#investors">Investors</a>
       <a href="#contact">Contact</a>
     </div>
     <button class="hamburger" onclick="toggleMenu()" aria-label="Menu">
@@ -206,6 +235,7 @@
   <a href="#roadmap" onclick="toggleMenu()">Roadmap</a>
   <a href="#faq" onclick="toggleMenu()">FAQ</a>
   <a href="#security" onclick="toggleMenu()">Security</a>
+  <a href="#investors" onclick="toggleMenu()">Investors</a>
   <a href="#contact" onclick="toggleMenu()">Contact</a>
 </div>
 
@@ -452,6 +482,86 @@
     </div>
   </section>
 
+  <section id="investors">
+    <h2>For Investors</h2>
+    <p class="subtitle">Why RoundPenny is positioned to redefine micro-investing</p>
+
+    <div class="investor-metrics">
+      <div class="investor-metric">
+        <div class="num">$1.2<span class="currency">T</span></div>
+        <div class="label">TAM — Global Micro-Investment Market</div>
+        <div class="src">Source: Allied Market Research, 2025</div>
+      </div>
+      <div class="investor-metric">
+        <div class="num">$84<span class="currency">B</span></div>
+        <div class="label">SAM — US + EU Digital Investment</div>
+        <div class="src">Source: Statista, 2025</div>
+      </div>
+      <div class="investor-metric">
+        <div class="num">$4.2<span class="currency">B</span></div>
+        <div class="label">SOM — Round-Up Segment (Targetable)</div>
+        <div class="src">Source: Internal analysis, 2026</div>
+      </div>
+      <div class="investor-metric">
+        <div class="num">22%</div>
+        <div class="label">CAGR (2025–2030 Projected)</div>
+        <div class="src">Source: Grand View Research</div>
+      </div>
+    </div>
+
+    <div class="investor-grid">
+      <div class="investor-card">
+        <div class="icon">💼</div>
+        <h3>Business Model</h3>
+        <ul>
+          <li><span class="highlight">Subscription revenue</span> — Free / $2.99 / $9.99 per month</li>
+          <li><span class="highlight">Merchant commission</span> — 0.25% per transaction (unique moat)</li>
+          <li><span class="highlight">White-label licensing</span> — Annual enterprise partnerships ($50k–$500k)</li>
+          <li><span class="highlight">Spread income</span> — Interest on uninvested cash balances</li>
+          <li><span class="highlight">Projected ARR (Year 3)</span> — $12M with 500k active users</li>
+        </ul>
+      </div>
+      <div class="investor-card">
+        <div class="icon">📈</div>
+        <h3>Traction & Growth</h3>
+        <ul>
+          <li><span class="highlight">Q1 2026</span> — Platform launch, 15 microservices live</li>
+          <li><span class="highlight">Q2 2026</span> — Partner onboarding, SOC 2 audit</li>
+          <li><span class="highlight">Q3 2026</span> — Target: 50k users, $500k GMV</li>
+          <li><span class="highlight">Q4 2026</span> — Target: 200k users, $5M GMV</li>
+          <li><span class="highlight">Year 2</span> — Target: 1M users, $50M GMV, FINRA licensed</li>
+        </ul>
+      </div>
+      <div class="investor-card">
+        <div class="icon">🏆</div>
+        <h3>Competitive Advantage</h3>
+        <div class="compare-card">
+          <table class="compare-table">
+            <tr><th></th><th>RoundPenny</th><th>Acorns</th><th>Stash</th></tr>
+            <tr><td>White-Label API</td><td class="yes">✓</td><td class="no">✗</td><td class="no">✗</td></tr>
+            <tr><td>Open Infrastructure</td><td class="yes">✓</td><td class="no">✗</td><td class="no">✗</td></tr>
+            <tr><td>Merchant Commission</td><td class="yes">✓</td><td class="no">✗</td><td class="no">✗</td></tr>
+            <tr><td>Real-Time Kafka Engine</td><td class="yes">✓</td><td class="no">✗</td><td class="no">✗</td></tr>
+            <tr><td>Multi-Tenant</td><td class="yes">✓</td><td class="no">✗</td><td class="no">✗</td></tr>
+            <tr><td>Self-Hostable</td><td class="yes">✓</td><td class="no">✗</td><td class="no">✗</td></tr>
+          </table>
+        </div>
+      </div>
+      <div class="investor-card">
+        <div class="icon">⚙️</div>
+        <h3>Technical Moat</h3>
+        <ul>
+          <li><span class="highlight">15 microservices</span> — Decoupled, independently scalable</li>
+          <li><span class="highlight">Kafka event-driven</span> — Real-time transaction processing</li>
+          <li><span class="highlight">PostgreSQL + Redis</span> — Reliable storage + caching</li>
+          <li><span class="highlight">Kong API Gateway</span> — Rate limiting, auth, routing</li>
+          <li><span class="highlight">Full observability</span> — Prometheus, Grafana, Loki, Tempo</li>
+          <li><span class="highlight">Bank-grade security</span> — AES-256, TLS 1.3, audit trails</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
   <section id="contact">
     <h2>Partner With Us</h2>
     <p class="subtitle">Ready to add round-up investing to your platform?</p>
@@ -624,7 +734,7 @@ const observer = new IntersectionObserver((entries) => {
   });
 }, { threshold: 0.1 });
 
-document.querySelectorAll('.feature-card, .metric, .roadmap-item, .faq-item, .security-badge, .about-grid .card').forEach(el => observer.observe(el));
+document.querySelectorAll('.feature-card, .metric, .roadmap-item, .faq-item, .security-badge, .about-grid .card, .investor-metric, .investor-card').forEach(el => observer.observe(el));
 
 </script>
 
