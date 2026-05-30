@@ -9,7 +9,7 @@
 [![K8s](https://img.shields.io/badge/K8s-Helm-326CE5?logo=kubernetes)](deploy/helm/)
 [![Terraform](https://img.shields.io/badge/Terraform-AWS-7B42BC?logo=terraform)](deploy/terraform/)
 [![Kong](https://img.shields.io/badge/API%20Gateway-Kong-003459?logo=kong)](deploy/kong/kong.yml)
-[![k6](https://img.shields.io/badge/Load%20Test-k6-7D64FF?logo=k6)](scripts/load-test.js)
+[![k6](https://img.shields.io/badge/Load%20Test-k6-7D64FF?logo=k6)](scripts/load-test-prod.js)
 
 ---
 
@@ -29,28 +29,7 @@
 | **CI/CD** | GitHub Actions → ghcr.io → Helm → EKS |
 | **Infra as Code** | Terraform (VPC, EKS, RDS, MSK, ECR, ALB) |
 
-## US Market
-
-RoundPenny is positioned to disrupt the US micro-investing market:
-
-| Metric | Value |
-|--------|-------|
-| TAM | $1.2T |
-| Leader (Acorns) revenue | $60M/mo |
-| Gen Z wanting to invest | 73% |
-| Market growth (2020→2025) | 340% |
-
-**Key differentiation:** API-first architecture, merchant commission revenue (Acorns has none), open source, multi-tenant by design. Built for B2B2C — neobanks, payroll platforms, and enterprise partners.
-
-### US Pricing
-
-| Tier | Price | Audience |
-|------|-------|----------|
-| **Direct** | $2/mo + 0.25% round-up commission | B2C |
-| **White-Label API** | $5k/mo (unlimited) | Neobanks, fintech partners |
-| **Enterprise** | Custom | On-prem, source code, 24/7 |
-
-See [`docs/US_PRICING.md`](docs/US_PRICING.md) for full details.
+> **🇺🇸 US Market:** API-first, merchant commission revenue (Acorns has none), open source, multi-tenant. Built for B2B2C — neobanks, payroll platforms, enterprise. See [`docs/US_PRICING.md`](docs/US_PRICING.md).
 
 ## Architecture
 
@@ -87,7 +66,7 @@ See [`docs/US_PRICING.md`](docs/US_PRICING.md) for full details.
                                +-------------------+
 ```
 
-**13 microservices** · **11 shared packages** · **20 Docker containers**
+**15 microservices** · **20+ shared packages** · **26 Docker containers**
 
 ---
 
@@ -140,6 +119,8 @@ curl http://localhost/v1/health
 | 11 | **fraud-service** | 8094 | Fraud detection |
 | 12 | **analytics-service** | 8093 | Event analytics |
 | 13 | **notification-service** | 8091 | Webhooks, email, push |
+| 14 | **admin-service** | 8095 | Admin panel + dashboard |
+| 15 | **subscription-service** | 8096 | Plans, billing, renewals |
 
 ---
 
@@ -176,6 +157,36 @@ Base URL: `http://localhost/v1`
 
 Full spec: [`docs/openapi.yaml`](docs/openapi.yaml)
 
+### Admin Endpoints
+
+| Method | Path | Description |
+|--------|------|-------------|
+| GET | `/v1/admin/dashboard` | Dashboard stats |
+| GET | `/v1/admin/users` | List users |
+| GET | `/v1/admin/users/{id}` | User detail |
+| GET | `/v1/admin/kyc` | KYC submissions |
+| GET | `/v1/admin/emails` | Email logs |
+
+### Subscription Endpoints
+
+| Method | Path | Description |
+|--------|------|-------------|
+| POST | `/v1/subscriptions` | Create subscription |
+| POST | `/v1/subscriptions/{id}/cancel` | Cancel |
+| GET | `/v1/subscriptions/current` | Current plan |
+| GET | `/v1/subscriptions/plans` | Available plans |
+| GET | `/v1/subscriptions/billing` | Billing history |
+
+### Legal
+
+| Document | Description |
+|----------|-------------|
+| [Terms of Service](docs/TERMS_OF_SERVICE.md) | Terms of use |
+| [Privacy Policy](docs/PRIVACY_POLICY.md) | Data handling |
+| [Cookie Policy](docs/COOKIE_POLICY.md) | Cookie usage |
+| [Regulatory Plan](docs/REGULATORY_PLAN.md) | FINRA/RIA compliance |
+| [Operations Runbook](docs/OPS_RUNBOOK.md) | Production ops guide |
+
 ---
 
 ## Monitoring
@@ -196,52 +207,89 @@ Dashboards: service metrics, Kafka lag, DB pools, business KPIs.
 |--------|------|
 | Docker Compose | `docker compose up -d` |
 | Kubernetes (Helm) | `deploy/helm/` |
-| Kubernetes (raw) | `deploy/k8s/` |
 | Terraform (AWS) | `deploy/terraform/` |
 
-See [`deploy/README.md`](deploy/README.md) for production checklist.
+### Production Checklist
+
+- [ ] Add secrets via Vault or `.env` (see [`deploy/secrets/README.md`](deploy/secrets/README.md))
+- [ ] Set up SSL certificates (see [`deploy/ssl/README.md`](deploy/ssl/README.md))
+- [ ] Configure DB backups via `scripts/backup.sh`
+- [ ] Review monitoring alerts in `deploy/prometheus/alerts.yml`
+- [ ] Review [`docs/OPS_RUNBOOK.md`](docs/OPS_RUNBOOK.md)
+
+See [`deploy/README.md`](deploy/README.md) for full production checklist.
 
 ---
 
 ## Project Structure
 
 ```
-├── services/          # 13 Go microservices
-├── pkg/               # 11 shared Go packages
-├── deploy/            # Docker, K8s, Helm, Terraform
+├── services/          # 15 Go microservices
+├── pkg/               # 20+ shared Go packages
+│   ├── audit/         # Audit logging
+│   ├── cache/         # Redis cache (mock fallback)
+│   ├── config/        # Config loader
+│   ├── cors/          # CORS middleware
+│   ├── crypto/        # Crypto helpers
+│   ├── db/            # DB pool
+│   ├── email/         # SendGrid (mock fallback)
+│   ├── event/         # Event types
+│   ├── idempotency/   # Idempotency key middleware
+│   ├── kafka/         # Kafka producer/consumer
+│   ├── kyc/           # Onfido KYC (mock fallback)
+│   ├── monitoring/    # Prometheus metrics + circuit breaker
+│   ├── secrets/       # Vault/env secrets manager
+│   ├── security/      # Security headers middleware
+│   ├── stripe/        # Stripe client
+│   ├── testhelper/    # Test utilities
+│   ├── tls/           # TLS config
+│   └── tracing/       # OpenTelemetry tracing
+├── deploy/            # Docker, Helm, Terraform
 │   ├── kong/          # Kong API Gateway config
 │   ├── helm/          # Helm chart
 │   ├── terraform/     # AWS infra (VPC, EKS, RDS, MSK, ECR, ALB)
-│   ├── k8s/           # Raw Kubernetes manifests
 │   ├── prometheus/    # Alert rules + scrape config
 │   ├── grafana/       # Dashboards + datasources
 │   ├── loki/          # Log aggregation config
 │   ├── tempo/         # Tracing config
-│   └── alertmanager/  # Alert routing + notifications
-├── docs/              # API spec
-└── scripts/           # Integration + load tests
+│   ├── alertmanager/  # Alert routing + notifications
+│   ├── secrets/       # Secrets management guide
+│   ├── ssl/           # SSL/TLS automation
+│   ├── vault/         # Vault config
+│   └── legal/         # Legal operations guide
+├── docs/              # OpenAPI spec, legal, runbook
+└── scripts/           # Integration, load, backup scripts
 ```
 
 ---
 
 ## Load Test Results
 
+**k6 (100 VU staged, 6-stage ramp):**
+
 ```
-✓ http_req_duration......: avg=12ms   p(95)=67ms
-✓ http_req_failed........: 0.00%
-✓ iterations.............: 1,234
+✓ http_req_duration..............: avg=12ms   p(95)=67ms   p(99)=120ms
+✓ http_req_failed................: 0.00%
+✓ iterations.....................: 5,000+
+✓ register failures..............: 0.00%
+✓ login failures.................: 0.00%
+✓ payment failures...............: 0.00%
 ```
+
+Run yourself: `./scripts/run-load-test-prod.sh`
 
 ---
 
 ## Tech Stack
 
-**Backend:** Go 1.26, PostgreSQL 16, Kafka 3.6  
+**Backend:** Go 1.26, PostgreSQL 16, Kafka 3.6, Redis 7  
 **Infrastructure:** Docker, Kubernetes (EKS), Terraform  
 **API Gateway:** Kong  
-**Observability:** Prometheus, Grafana, Loki, Tempo, Alertmanager  
+**Observability:** Prometheus, Grafana, Loki, Tempo, Alertmanager, Redis Exporter  
 **CI/CD:** GitHub Actions, Trivy, Helm, ghcr.io  
 **Payments:** Stripe (mock mode for dev)  
+**KYC:** Onfido (mock mode for dev)  
+**Email:** SendGrid (mock mode for dev)  
 **Load Testing:** k6
 
 ---
