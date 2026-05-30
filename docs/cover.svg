@@ -46,50 +46,30 @@
 
   <rect x="0" y="0" width="1200" height="3" fill="url(#lineFade)"/>
 
-  <!-- Code snippet background -->
-  <g transform="translate(600, 395)">
-    <rect x="-240" y="-48" width="480" height="96" rx="10" fill="#0d1326" stroke="#1a2040" stroke-width="1.2" opacity="0.9"/>
+  <g transform="translate(600, 380)">
+    <rect x="-240" y="-48" width="480" height="96" rx="10" fill="#0d1326" stroke="#1a2040" stroke-width="1.2"/>
     <rect x="-240" y="-48" width="480" height="28" rx="10" fill="#111829"/>
     <rect x="-240" y="-28" width="480" height="4" fill="#111829"/>
     <circle cx="-210" cy="-34" r="5" fill="#ff5f56"/>
     <circle cx="-192" cy="-34" r="5" fill="#ffbd2e"/>
     <circle cx="-174" cy="-34" r="5" fill="#27c93f"/>
     <text x="-200" y="-14" font-size="10" fill="#546e7a" font-family="'SF Mono', 'Fira Code', 'Consolas', monospace">main.go</text>
-    <text x="-220" y="8" font-size="12" fill="#90caf9" font-family="'SF Mono', 'Fira Code', 'Consolas', monospace">
+    <text x="-220" y="8" font-size="13" fill="#90caf9" font-family="'SF Mono', 'Fira Code', 'Consolas', monospace">
       <tspan fill="#c792ea">func</tspan> <tspan fill="#82aaff">main</tspan>() {
-      <tspan x="-220" dy="18"><tspan fill="#c792ea">  go</tspan> <tspan fill="#82aaff">startServer</tspan>()</tspan>
-      <tspan x="-220" dy="18">  <tspan fill="#89ddff">fmt</tspan>.Println(<tspan fill="#c3e88d">"RoundPenny ready"</tspan>)</tspan>
+      <tspan x="-220" dy="20"><tspan fill="#c792ea">  go</tspan> <tspan fill="#82aaff">startServer</tspan>()</tspan>
+      <tspan x="-220" dy="20">  <tspan fill="#89ddff">fmt</tspan>.Println(<tspan fill="#c3e88d">"RoundPenny ready"</tspan>)</tspan>
     </text>
   </g>
 
-  <!-- Logo mark -->
-  <g transform="translate(600, 120)">
-    <circle cx="0" cy="0" r="38" fill="none" stroke="url(#accent)" stroke-width="2.5" opacity="0.3"/>
-    <circle cx="0" cy="0" r="28" fill="none" stroke="url(#accent)" stroke-width="2" opacity="0.5"/>
-    <circle cx="0" cy="0" r="18" fill="none" stroke="url(#accent)" stroke-width="1.5" opacity="0.8"/>
-    <polygon points="0,-45 12,-20 -12,-20" fill="url(#accent)" filter="url(#softGlow)"/>
-    <rect x="-3" y="-32" width="6" height="14" fill="url(#accent)" rx="2" filter="url(#softGlow)"/>
-    <text x="0" y="-4" text-anchor="middle" font-size="14" font-weight="800" fill="#e0e6f0" font-family="'Inter', 'Segoe UI', sans-serif">¢</text>
+  <g transform="translate(600, 510)">
+    <rect x="-120" y="-18" width="240" height="36" rx="18" fill="#4fc3f7" opacity="0.08" stroke="#4fc3f7" stroke-width="1" stroke-opacity="0.25"/>
+    <text x="0" y="4" text-anchor="middle" font-size="12" fill="#4fc3f7" font-family="'Inter', 'Segoe UI', sans-serif" letter-spacing="3" font-weight="600">OPEN SOURCE · API-FIRST · KUBERNETES</text>
   </g>
 
-  <text x="600" y="200" text-anchor="middle" font-size="76" font-weight="800" fill="#e0e6f0" font-family="'Inter', 'Segoe UI', sans-serif" letter-spacing="1">
-    Round<tspan fill="#69f0ae">Penny</tspan>
-  </text>
-
-  <text x="600" y="240" text-anchor="middle" font-size="20" fill="#546e7a" font-family="'Inter', 'Segoe UI', sans-serif" letter-spacing="6" font-weight="400">
-    ROUND-UP MICRO-INVESTMENT PLATFORM
-  </text>
-
-  <line x1="480" y1="262" x2="720" y2="262" stroke="url(#accent)" stroke-width="2" opacity="0.5"/>
-
-  <text x="600" y="290" text-anchor="middle" font-size="15" fill="#78909c" font-family="'Inter', 'Segoe UI', sans-serif" letter-spacing="1">
-    Spare change investing · Built for scale
-  </text>
-
-  <g transform="translate(600, 530)">
-    <rect x="-106" y="-16" width="212" height="32" rx="16" fill="#4fc3f7" opacity="0.1" stroke="#4fc3f7" stroke-width="1" stroke-opacity="0.3"/>
-    <text x="0" y="4" text-anchor="middle" font-size="12" fill="#4fc3f7" font-family="'Inter', 'Segoe UI', sans-serif" letter-spacing="2" font-weight="600">OPEN SOURCE · API-FIRST · KUBERNETES</text>
+  <g transform="translate(600, 575)">
+    <rect x="-145" y="-14" width="290" height="28" rx="14" fill="#1a2040" opacity="0.5"/>
+    <text x="0" y="4" text-anchor="middle" font-size="11" fill="#546e7a" font-family="'SF Mono', 'Fira Code', 'Consolas', monospace" letter-spacing="1">
+      <tspan fill="#4fc3f7">◆</tspan> github.com/tmuhammet36-cmd/roundpenny
+    </text>
   </g>
-
-  <text x="600" y="615" text-anchor="middle" font-size="10" fill="#2a3050" font-family="'Inter', 'Segoe UI', sans-serif" letter-spacing="3">github.com/tmuhammet36-cmd/roundpenny</text>
 </svg>
