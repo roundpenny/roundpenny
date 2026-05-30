@@ -12,7 +12,7 @@ import (
 type mockWebhookRepo struct {
 	createFn        func(ctx context.Context, w *repository.Webhook) error
 	getByIDFn       func(ctx context.Context, id uuid.UUID) (*repository.Webhook, error)
-	getByUserIDFn   func(ctx context.Context, userID uuid.UUID) ([]*repository.Webhook, error)
+	getByUserIDFn   func(ctx context.Context, userID uuid.UUID, limit, offset int) ([]*repository.Webhook, error)
 	getActiveByEventFn func(ctx context.Context, eventType string) ([]*repository.Webhook, error)
 	updateFn        func(ctx context.Context, w *repository.Webhook) error
 	deleteFn        func(ctx context.Context, id uuid.UUID) error
@@ -22,7 +22,7 @@ type mockWebhookRepo struct {
 
 func (m *mockWebhookRepo) Create(ctx context.Context, w *repository.Webhook) error { return m.createFn(ctx, w) }
 func (m *mockWebhookRepo) GetByID(ctx context.Context, id uuid.UUID) (*repository.Webhook, error) { return m.getByIDFn(ctx, id) }
-func (m *mockWebhookRepo) GetByUserID(ctx context.Context, uid uuid.UUID) ([]*repository.Webhook, error) { return m.getByUserIDFn(ctx, uid) }
+func (m *mockWebhookRepo) GetByUserID(ctx context.Context, uid uuid.UUID, limit, offset int) ([]*repository.Webhook, error) { return m.getByUserIDFn(ctx, uid, limit, offset) }
 func (m *mockWebhookRepo) GetActiveByEvent(ctx context.Context, e string) ([]*repository.Webhook, error) { return m.getActiveByEventFn(ctx, e) }
 func (m *mockWebhookRepo) Update(ctx context.Context, w *repository.Webhook) error { return m.updateFn(ctx, w) }
 func (m *mockWebhookRepo) Delete(ctx context.Context, id uuid.UUID) error { return m.deleteFn(ctx, id) }

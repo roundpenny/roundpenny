@@ -72,11 +72,11 @@ func (r *WebhookRepository) GetByID(ctx context.Context, id uuid.UUID) (*Webhook
 	return w, nil
 }
 
-func (r *WebhookRepository) GetByUserID(ctx context.Context, userID uuid.UUID) ([]*Webhook, error) {
+func (r *WebhookRepository) GetByUserID(ctx context.Context, userID uuid.UUID, limit, offset int) ([]*Webhook, error) {
 	query := `SELECT id, user_id, url, COALESCE(secret,''), events, is_active,
 	                 COALESCE(description,''), retry_count, timeout_ms, created_at, updated_at
-	          FROM webhooks WHERE user_id = $1 ORDER BY created_at DESC`
-	rows, err := r.pool.Query(ctx, query, userID)
+	          FROM webhooks WHERE user_id = $1 ORDER BY created_at DESC LIMIT $2 OFFSET $3`
+	rows, err := r.pool.Query(ctx, query, userID, limit, offset)
 	if err != nil {
 		return nil, err
 	}

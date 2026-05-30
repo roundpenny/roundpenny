@@ -21,7 +21,7 @@ var (
 type WebhookRepository interface {
 	Create(ctx context.Context, w *repository.Webhook) error
 	GetByID(ctx context.Context, id uuid.UUID) (*repository.Webhook, error)
-	GetByUserID(ctx context.Context, userID uuid.UUID) ([]*repository.Webhook, error)
+	GetByUserID(ctx context.Context, userID uuid.UUID, limit, offset int) ([]*repository.Webhook, error)
 	GetActiveByEvent(ctx context.Context, eventType string) ([]*repository.Webhook, error)
 	Update(ctx context.Context, w *repository.Webhook) error
 	Delete(ctx context.Context, id uuid.UUID) error
@@ -124,8 +124,9 @@ func (s *WebhookService) GetWebhook(ctx context.Context, id uuid.UUID) (*Webhook
 	return webhookToResponse(w), nil
 }
 
-func (s *WebhookService) ListUserWebhooks(ctx context.Context, userID uuid.UUID) ([]*WebhookResponse, error) {
-	webhooks, err := s.repo.GetByUserID(ctx, userID)
+func (s *WebhookService) ListUserWebhooks(ctx context.Context, userID uuid.UUID, page, pageSize int) ([]*WebhookResponse, error) {
+	offset := (page - 1) * pageSize
+	webhooks, err := s.repo.GetByUserID(ctx, userID, pageSize, offset)
 	if err != nil {
 		return nil, err
 	}
