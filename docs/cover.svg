@@ -1,104 +1,95 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
   <defs>
     <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#0a0e1a"/>
-      <stop offset="50%" stop-color="#0f1528"/>
-      <stop offset="100%" stop-color="#0a0e1a"/>
+      <stop offset="0%" stop-color="#060a16"/>
+      <stop offset="100%" stop-color="#0c1224"/>
     </linearGradient>
-    <linearGradient id="glow" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#4fc3f7" stop-opacity="0.15"/>
-      <stop offset="100%" stop-color="#69f0ae" stop-opacity="0.05"/>
-    </linearGradient>
-    <linearGradient id="accent" x1="0%" y1="0%" x2="100%" y2="0%">
+    <linearGradient id="accent" x1="0%" y1="0%" x2="100%" y2="100%">
       <stop offset="0%" stop-color="#4fc3f7"/>
       <stop offset="100%" stop-color="#69f0ae"/>
     </linearGradient>
-    <linearGradient id="btn" x1="0%" y1="0%" x2="100%" y2="0%">
-      <stop offset="0%" stop-color="#4fc3f7"/>
-      <stop offset="100%" stop-color="#29b6f6"/>
+    <linearGradient id="glow" x1="50%" y1="50%" x2="50%" y2="100%">
+      <stop offset="0%" stop-color="#4fc3f7" stop-opacity="0.12"/>
+      <stop offset="100%" stop-color="#69f0ae" stop-opacity="0"/>
     </linearGradient>
-    <filter id="shadow">
-      <feDropShadow dx="0" dy="2" stdDeviation="4" flood-color="#000" flood-opacity="0.5"/>
-    </filter>
+    <linearGradient id="lineFade" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#4fc3f7" stop-opacity="0"/>
+      <stop offset="50%" stop-color="#4fc3f7" stop-opacity="0.6"/>
+      <stop offset="100%" stop-color="#69f0ae" stop-opacity="0"/>
+    </linearGradient>
     <filter id="glowFilter">
-      <feGaussianBlur stdDeviation="60" result="blur"/>
-      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+      <feGaussianBlur stdDeviation="50"/>
     </filter>
+    <filter id="softGlow">
+      <feGaussianBlur stdDeviation="3"/>
+    </filter>
+    <clipPath id="codeClip">
+      <rect x="340" y="380" width="520" height="130" rx="8"/>
+    </clipPath>
   </defs>
 
-  <!-- Background -->
   <rect width="1200" height="630" fill="url(#bg)"/>
 
-  <!-- Glow effect behind center -->
-  <ellipse cx="600" cy="315" rx="400" ry="250" fill="url(#glow)" filter="url(#glowFilter)"/>
+  <ellipse cx="600" cy="300" rx="450" ry="300" fill="url(#glow)" filter="url(#glowFilter)"/>
 
-  <!-- Subtle grid pattern -->
-  <g stroke="#1a2040" stroke-width="0.5" opacity="0.4">
-    <line x1="0" y1="100" x2="1200" y2="100"/>
-    <line x1="0" y1="200" x2="1200" y2="200"/>
-    <line x1="0" y1="300" x2="1200" y2="300"/>
-    <line x1="0" y1="400" x2="1200" y2="400"/>
-    <line x1="0" y1="500" x2="1200" y2="500"/>
-    <line x1="200" y1="0" x2="200" y2="630"/>
-    <line x1="400" y1="0" x2="400" y2="630"/>
+  <g stroke="#1a2040" stroke-width="0.5" opacity="0.3">
+    <line x1="0" y1="90" x2="1200" y2="90"/>
+    <line x1="0" y1="180" x2="1200" y2="180"/>
+    <line x1="0" y1="270" x2="1200" y2="270"/>
+    <line x1="0" y1="360" x2="1200" y2="360"/>
+    <line x1="0" y1="450" x2="1200" y2="450"/>
+    <line x1="0" y1="540" x2="1200" y2="540"/>
+    <line x1="300" y1="0" x2="300" y2="630"/>
     <line x1="600" y1="0" x2="600" y2="630"/>
-    <line x1="800" y1="0" x2="800" y2="630"/>
-    <line x1="1000" y1="0" x2="1000" y2="630"/>
+    <line x1="900" y1="0" x2="900" y2="630"/>
   </g>
 
-  <!-- Top accent line -->
-  <rect x="0" y="0" width="1200" height="4" fill="url(#accent)"/>
+  <rect x="0" y="0" width="1200" height="3" fill="url(#lineFade)"/>
 
-  <!-- Logo icon - stacked coins/rounding abstraction -->
-  <g transform="translate(600, 220)">
-    <!-- Coin stack -->
-    <ellipse cx="0" cy="15" rx="60" ry="12" fill="#69f0ae" opacity="0.3"/>
-    <ellipse cx="0" cy="0" rx="55" ry="10" fill="#4fc3f7" opacity="0.5"/>
-    <ellipse cx="0" cy="-15" rx="50" ry="9" fill="#69f0ae" opacity="0.4"/>
-    <ellipse cx="0" cy="-30" rx="45" ry="8" fill="#4fc3f7" opacity="0.6"/>
-
-    <!-- Arrow up -->
-    <polygon points="0,-65 15,-45 -15,-45" fill="url(#accent)" filter="url(#shadow)"/>
-    <rect x="-4" y="-55" width="8" height="20" fill="url(#accent)" rx="2"/>
-
-    <!-- Center coin detail -->
-    <circle cx="0" cy="-30" r="20" fill="none" stroke="#4fc3f7" stroke-width="1.5" opacity="0.8"/>
-    <text x="0" y="-26" text-anchor="middle" font-size="16" font-weight="800" fill="#4fc3f7" font-family="Inter, sans-serif">$</text>
+  <!-- Code snippet background -->
+  <g transform="translate(600, 395)">
+    <rect x="-240" y="-48" width="480" height="96" rx="10" fill="#0d1326" stroke="#1a2040" stroke-width="1.2" opacity="0.9"/>
+    <rect x="-240" y="-48" width="480" height="28" rx="10" fill="#111829"/>
+    <rect x="-240" y="-28" width="480" height="4" fill="#111829"/>
+    <circle cx="-210" cy="-34" r="5" fill="#ff5f56"/>
+    <circle cx="-192" cy="-34" r="5" fill="#ffbd2e"/>
+    <circle cx="-174" cy="-34" r="5" fill="#27c93f"/>
+    <text x="-200" y="-14" font-size="10" fill="#546e7a" font-family="'SF Mono', 'Fira Code', 'Consolas', monospace">main.go</text>
+    <text x="-220" y="8" font-size="12" fill="#90caf9" font-family="'SF Mono', 'Fira Code', 'Consolas', monospace">
+      <tspan fill="#c792ea">func</tspan> <tspan fill="#82aaff">main</tspan>() {
+      <tspan x="-220" dy="18"><tspan fill="#c792ea">  go</tspan> <tspan fill="#82aaff">startServer</tspan>()</tspan>
+      <tspan x="-220" dy="18">  <tspan fill="#89ddff">fmt</tspan>.Println(<tspan fill="#c3e88d">"RoundPenny ready"</tspan>)</tspan>
+    </text>
   </g>
 
-  <!-- Title -->
-  <text x="600" y="340" text-anchor="middle" font-size="72" font-weight="800" fill="#e0e6f0" font-family="'Inter', 'Segoe UI', sans-serif" letter-spacing="2">
+  <!-- Logo mark -->
+  <g transform="translate(600, 120)">
+    <circle cx="0" cy="0" r="38" fill="none" stroke="url(#accent)" stroke-width="2.5" opacity="0.3"/>
+    <circle cx="0" cy="0" r="28" fill="none" stroke="url(#accent)" stroke-width="2" opacity="0.5"/>
+    <circle cx="0" cy="0" r="18" fill="none" stroke="url(#accent)" stroke-width="1.5" opacity="0.8"/>
+    <polygon points="0,-45 12,-20 -12,-20" fill="url(#accent)" filter="url(#softGlow)"/>
+    <rect x="-3" y="-32" width="6" height="14" fill="url(#accent)" rx="2" filter="url(#softGlow)"/>
+    <text x="0" y="-4" text-anchor="middle" font-size="14" font-weight="800" fill="#e0e6f0" font-family="'Inter', 'Segoe UI', sans-serif">¢</text>
+  </g>
+
+  <text x="600" y="200" text-anchor="middle" font-size="76" font-weight="800" fill="#e0e6f0" font-family="'Inter', 'Segoe UI', sans-serif" letter-spacing="1">
     Round<tspan fill="#69f0ae">Penny</tspan>
   </text>
 
-  <!-- Subtitle -->
-  <text x="600" y="385" text-anchor="middle" font-size="24" fill="#90caf9" font-family="'Inter', 'Segoe UI', sans-serif" letter-spacing="4" font-weight="300">
+  <text x="600" y="240" text-anchor="middle" font-size="20" fill="#546e7a" font-family="'Inter', 'Segoe UI', sans-serif" letter-spacing="6" font-weight="400">
     ROUND-UP MICRO-INVESTMENT PLATFORM
   </text>
 
-  <!-- Tagline -->
-  <text x="600" y="425" text-anchor="middle" font-size="16" fill="#546e7a" font-family="'Inter', 'Segoe UI', sans-serif" letter-spacing="1">
+  <line x1="480" y1="262" x2="720" y2="262" stroke="url(#accent)" stroke-width="2" opacity="0.5"/>
+
+  <text x="600" y="290" text-anchor="middle" font-size="15" fill="#78909c" font-family="'Inter', 'Segoe UI', sans-serif" letter-spacing="1">
     Spare change investing · Built for scale
   </text>
 
-  <!-- Divider -->
-  <line x1="480" y1="445" x2="720" y2="445" stroke="url(#accent)" stroke-width="2" opacity="0.6"/>
-
-  <!-- Feature badges -->
-  <g transform="translate(600, 490)">
-    <rect x="-160" y="-18" width="140" height="36" rx="18" fill="#111829" stroke="#1a2040" stroke-width="1"/>
-    <text x="-90" y="5" text-anchor="middle" font-size="13" fill="#90caf9" font-family="'Inter', 'Segoe UI', sans-serif">13 Microservices</text>
-
-    <rect x="-10" y="-18" width="140" height="36" rx="18" fill="#111829" stroke="#1a2040" stroke-width="1"/>
-    <text x="60" y="5" text-anchor="middle" font-size="13" fill="#90caf9" font-family="'Inter', 'Segoe UI', sans-serif">Kafka · PostgreSQL</text>
-
-    <rect x="140" y="-18" width="140" height="36" rx="18" fill="#111829" stroke="#1a2040" stroke-width="1"/>
-    <text x="210" y="5" text-anchor="middle" font-size="13" fill="#90caf9" font-family="'Inter', 'Segoe UI', sans-serif">Kubernetes Ready</text>
+  <g transform="translate(600, 530)">
+    <rect x="-106" y="-16" width="212" height="32" rx="16" fill="#4fc3f7" opacity="0.1" stroke="#4fc3f7" stroke-width="1" stroke-opacity="0.3"/>
+    <text x="0" y="4" text-anchor="middle" font-size="12" fill="#4fc3f7" font-family="'Inter', 'Segoe UI', sans-serif" letter-spacing="2" font-weight="600">OPEN SOURCE · API-FIRST · KUBERNETES</text>
   </g>
 
-  <!-- Bottom accent line -->
-  <rect x="0" y="626" width="1200" height="4" fill="url(#accent)"/>
-
-  <!-- Version -->
-  <text x="1170" y="615" text-anchor="end" font-size="11" fill="#546e7a" font-family="'Inter', 'Segoe UI', sans-serif">v1.0.0</text>
+  <text x="600" y="615" text-anchor="middle" font-size="10" fill="#2a3050" font-family="'Inter', 'Segoe UI', sans-serif" letter-spacing="3">github.com/tmuhammet36-cmd/roundpenny</text>
 </svg>
