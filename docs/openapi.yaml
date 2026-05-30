@@ -1170,6 +1170,296 @@ paths:
                   $ref: "#/components/schemas/FraudAlert"
         "401": { description: Unauthorized }
 
+  # ─── Admin ───────────────────────────────────────────────────────────
+  /v1/admin/login:
+    post:
+      summary: Admin login
+      tags: [Admin]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email: { type: string }
+                password: { type: string }
+      responses:
+        "200":
+          description: Admin login successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  access_token: { type: string }
+                  token_type: { type: string }
+                  expires_in: { type: integer }
+        "401": { description: Invalid credentials }
+
+  /v1/admin/stats:
+    get:
+      summary: Get admin dashboard stats
+      tags: [Admin]
+      security: [{ BearerAuth: [] }]
+      responses:
+        "200":
+          description: Dashboard stats
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AdminStats"
+        "401": { description: Unauthorized }
+
+  /v1/admin/users:
+    get:
+      summary: List all users
+      tags: [Admin]
+      security: [{ BearerAuth: [] }]
+      parameters:
+        - { in: query, name: page, schema: { type: integer } }
+        - { in: query, name: page_size, schema: { type: integer } }
+      responses:
+        "200":
+          description: Paginated user list
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data: { type: array, items: { $ref: "#/components/schemas/User" } }
+                  total: { type: integer }
+                  page: { type: integer }
+
+  /v1/admin/users/{id}:
+    get:
+      summary: Get user detail
+      tags: [Admin]
+      security: [{ BearerAuth: [] }]
+      parameters:
+        - { in: path, name: id, required: true, schema: { type: string, format: uuid } }
+      responses:
+        "200":
+          description: User detail
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AdminUserDetail"
+        "404": { description: Not found }
+
+    put:
+      summary: Update user status
+      tags: [Admin]
+      security: [{ BearerAuth: [] }]
+      parameters:
+        - { in: path, name: id, required: true, schema: { type: string, format: uuid } }
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                kyc_status: { type: string, enum: [pending, approved, rejected] }
+      responses:
+        "200": { description: Status updated }
+
+  /v1/admin/merchants:
+    get:
+      summary: List all merchants
+      tags: [Admin]
+      security: [{ BearerAuth: [] }]
+      parameters:
+        - { in: query, name: page, schema: { type: integer } }
+        - { in: query, name: page_size, schema: { type: integer } }
+      responses:
+        "200":
+          description: Paginated merchant list
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data: { type: array, items: { $ref: "#/components/schemas/Merchant" } }
+                  total: { type: integer }
+                  page: { type: integer }
+
+  /v1/admin/merchants/{id}:
+    get:
+      summary: Get merchant detail
+      tags: [Admin]
+      security: [{ BearerAuth: [] }]
+      parameters:
+        - { in: path, name: id, required: true, schema: { type: string, format: uuid } }
+      responses:
+        "200":
+          description: Merchant detail
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Merchant"
+        "404": { description: Not found }
+
+  /v1/admin/transactions:
+    get:
+      summary: List all transactions
+      tags: [Admin]
+      security: [{ BearerAuth: [] }]
+      parameters:
+        - { in: query, name: page, schema: { type: integer } }
+        - { in: query, name: page_size, schema: { type: integer } }
+      responses:
+        "200":
+          description: Paginated transaction list
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data: { type: array, items: { $ref: "#/components/schemas/Transaction" } }
+                  total: { type: integer }
+                  page: { type: integer }
+
+  /v1/admin/transactions/{id}:
+    get:
+      summary: Get transaction detail
+      tags: [Admin]
+      security: [{ BearerAuth: [] }]
+      parameters:
+        - { in: path, name: id, required: true, schema: { type: string, format: uuid } }
+      responses:
+        "200":
+          description: Transaction detail
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Transaction"
+        "404": { description: Not found }
+
+  /v1/admin/fraud-alerts:
+    get:
+      summary: List fraud alerts
+      tags: [Admin]
+      security: [{ BearerAuth: [] }]
+      parameters:
+        - { in: query, name: page, schema: { type: integer } }
+        - { in: query, name: page_size, schema: { type: integer } }
+      responses:
+        "200":
+          description: Paginated fraud alert list
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data: { type: array, items: { $ref: "#/components/schemas/FraudAlert" } }
+                  total: { type: integer }
+                  page: { type: integer }
+
+  /v1/admin/fraud-alerts/{id}/review:
+    post:
+      summary: Review a fraud alert
+      tags: [Admin]
+      security: [{ BearerAuth: [] }]
+      parameters:
+        - { in: path, name: id, required: true, schema: { type: string, format: uuid } }
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status: { type: string, enum: [resolved, false_positive, investigated] }
+      responses:
+        "200": { description: Alert reviewed }
+
+  /v1/admin/kyc-submissions:
+    get:
+      summary: List KYC submissions
+      tags: [Admin]
+      security: [{ BearerAuth: [] }]
+      parameters:
+        - { in: query, name: page, schema: { type: integer } }
+        - { in: query, name: page_size, schema: { type: integer } }
+      responses:
+        "200":
+          description: Paginated KYC submission list
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data: { type: array, items: { $ref: "#/components/schemas/KycSubmission" } }
+                  total: { type: integer }
+                  page: { type: integer }
+
+  /v1/admin/kyc-submissions/{id}/review:
+    post:
+      summary: Review a KYC submission
+      tags: [Admin]
+      security: [{ BearerAuth: [] }]
+      parameters:
+        - { in: path, name: id, required: true, schema: { type: string, format: uuid } }
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status: { type: string, enum: [approved, rejected] }
+                rejection_reason: { type: string }
+      responses:
+        "200": { description: KYC reviewed }
+
+  # ─── Email ───────────────────────────────────────────────────────────
+  /v1/emails/send:
+    post:
+      summary: Send an email
+      tags: [Email]
+      security: [{ BearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [to, subject]
+              properties:
+                user_id: { type: string, format: uuid }
+                to: { type: string, format: email }
+                subject: { type: string }
+                body: { type: string }
+                html: { type: string }
+      responses:
+        "200":
+          description: Email sent
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EmailLog"
+        "400": { description: Bad request }
+        "401": { description: Unauthorized }
+
+  /v1/emails:
+    get:
+      summary: List sent emails
+      tags: [Email]
+      security: [{ BearerAuth: [] }]
+      parameters:
+        - { in: query, name: page, schema: { type: integer } }
+        - { in: query, name: page_size, schema: { type: integer } }
+      responses:
+        "200":
+          description: Paginated email log list
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data: { type: array, items: { $ref: "#/components/schemas/EmailLog" } }
+                  total: { type: integer }
+                  page: { type: integer }
+
 components:
   securitySchemes:
     BearerAuth:
@@ -1428,13 +1718,63 @@ components:
         description: { type: string }
         created_at: { type: string, format: date-time }
 
-    Notification:
-      type: object
-      properties:
-        id: { type: string, format: uuid }
-        user_id: { type: string, format: uuid }
-        type: { type: string }
-        title: { type: string }
-        body: { type: string }
-        is_read: { type: boolean }
-        created_at: { type: string, format: date-time }
+     Notification:
+       type: object
+       properties:
+         id: { type: string, format: uuid }
+         user_id: { type: string, format: uuid }
+         type: { type: string }
+         title: { type: string }
+         body: { type: string }
+         is_read: { type: boolean }
+         created_at: { type: string, format: date-time }
+
+     AdminStats:
+       type: object
+       properties:
+         total_users: { type: integer }
+         pending_kyc: { type: integer }
+         active_merchants: { type: integer }
+         total_transactions: { type: integer }
+         open_fraud_alerts: { type: integer }
+         pending_payments: { type: integer }
+
+     AdminUserDetail:
+       type: object
+       properties:
+         id: { type: string, format: uuid }
+         email: { type: string, format: email }
+         full_name: { type: string }
+         phone: { type: string }
+         kyc_status: { type: string }
+         mfa_enabled: { type: boolean }
+         role: { type: string }
+         created_at: { type: string, format: date-time }
+         updated_at: { type: string, format: date-time }
+
+     KycSubmission:
+       type: object
+       properties:
+         id: { type: string, format: uuid }
+         user_id: { type: string, format: uuid }
+         full_name: { type: string }
+         document_type: { type: string }
+         document_number: { type: string }
+         status: { type: string, enum: [pending, approved, rejected] }
+         rejection_reason: { type: string }
+         submitted_at: { type: string, format: date-time }
+         reviewed_at: { type: string, format: date-time }
+
+     EmailLog:
+       type: object
+       properties:
+         id: { type: string, format: uuid }
+         user_id: { type: string, format: uuid }
+         to_email: { type: string, format: email }
+         subject: { type: string }
+         body: { type: string }
+         html: { type: string }
+         status: { type: string, enum: [sent, failed, pending] }
+         error: { type: string }
+         sent_at: { type: string, format: date-time, nullable: true }
+         created_at: { type: string, format: date-time }

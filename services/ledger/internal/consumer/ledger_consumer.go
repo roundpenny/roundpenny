@@ -4,7 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"log"
+	"log/slog"
 
 	"github.com/roundup-platform/pkg/event"
 	"github.com/roundup-platform/services/ledger/internal/service"
@@ -42,7 +42,7 @@ func (c *LedgerConsumer) HandleEvent(ctx context.Context, topic string, key stri
 		return c.svc.RecordInvestment(ctx, evt)
 
 	default:
-		log.Printf("ledger: unknown topic: %s", topic)
+		slog.Warn("ledger: unknown topic", "topic", topic)
 		return nil
 	}
 }

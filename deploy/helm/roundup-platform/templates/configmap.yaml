@@ -7,3 +7,7 @@ data:
   DATABASE_URL: {{ .Values.global.postgres.url }}
   KAFKA_BROKERS: {{ .Values.global.kafka.brokers }}
   JWT_SECRET: {{ .Values.global.jwtSecret }}
+  REDIS_ADDR: {{ .Values.global.redis.addr }}
+  POSTGRES_HOST: {{ .Values.postgres.host }}
+  POSTGRES_PORT: {{ .Values.postgres.port | quote }}
+  POSTGRES_USER: {{ .Values.postgres.user }}

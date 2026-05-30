@@ -3,7 +3,7 @@ package handler
 import (
 	"encoding/json"
 	"errors"
-	"log"
+	"log/slog"
 	"net/http"
 	"strings"
 
@@ -129,7 +129,7 @@ func (h *AuthHandler) Logout(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err := h.svc.Logout(r.Context(), userID); err != nil {
-		log.Printf("logout error: %v", err)
+		slog.Info("logout error", "error", err)
 		writeError(w, http.StatusInternalServerError, "logout failed")
 		return
 	}

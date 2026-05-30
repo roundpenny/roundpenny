@@ -62,3 +62,11 @@ scrape_configs:
   - job_name: "fraud-service"
     static_configs:
       - targets: ["fraud-service:8094"]
+
+  - job_name: "admin-service"
+    static_configs:
+      - targets: ["admin-service:8095"]
+
+  - job_name: "redis"
+    static_configs:
+      - targets: ["redis-exporter:9121"]

@@ -3,6 +3,7 @@ package handler
 import (
 	"encoding/json"
 	"net/http"
+	"strconv"
 
 	"github.com/google/uuid"
 	"github.com/roundup-platform/services/transaction/internal/service"
@@ -61,7 +62,20 @@ func (h *TransactionHandler) ListByUser(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	txs, err := h.svc.ListByUser(r.Context(), userID, 1, 20)
+	page := 1
+	pageSize := 20
+	if p := r.URL.Query().Get("page"); p != "" {
+		if n, err := strconv.Atoi(p); err == nil && n > 0 {
+			page = n
+		}
+	}
+	if ps := r.URL.Query().Get("page_size"); ps != "" {
+		if n, err := strconv.Atoi(ps); err == nil && n > 0 && n <= 100 {
+			pageSize = n
+		}
+	}
+
+	txs, err := h.svc.ListByUser(r.Context(), userID, page, pageSize)
 	if err != nil {
 		writeError(w, http.StatusInternalServerError, "query failed")
 		return

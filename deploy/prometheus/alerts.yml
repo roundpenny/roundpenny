@@ -12,7 +12,9 @@ groups:
       description: "{{ $labels.job }} has been down for more than 30 seconds"
 
   - alert: HighErrorRate
-    expr: rate(http_requests_total{status=~"5.."}[5m]) / rate(http_requests_total[5m]) > 0.05
+    expr: |
+      (rate({__name__=~".*_http_requests_total",status=~"5.."}[5m])
+       / rate({__name__=~".*_http_requests_total"}[5m])) > 0.05
     for: 5m
     labels:
       severity: warning
@@ -21,7 +23,8 @@ groups:
       description: "{{ $labels.job }} has error rate >5% for 5 minutes"
 
   - alert: HighLatency
-    expr: histogram_quantile(0.99, rate(http_request_duration_seconds_bucket[5m])) > 1
+    expr: |
+      histogram_quantile(0.99, rate({__name__=~".*_http_request_duration_seconds_bucket"}[5m])) > 1
     for: 5m
     labels:
       severity: warning
@@ -30,7 +33,7 @@ groups:
       description: "{{ $labels.job }} has p99 latency >1s for 5 minutes"
 
   - alert: HighRequestRate
-    expr: rate(http_requests_total[1m]) > 1000
+    expr: rate({__name__=~".*_http_requests_total"}[1m]) > 1000
     for: 5m
     labels:
       severity: info
@@ -55,3 +58,21 @@ groups:
     annotations:
       summary: "Kafka broker is down"
       description: "No Kafka brokers are available for more than 30 seconds"
+
+  - alert: RedisDown
+    expr: redis_up == 0
+    for: 30s
+    labels:
+      severity: critical
+    annotations:
+      summary: "Redis is unreachable"
+      description: "Redis cache is unreachable for more than 30 seconds"
+
+  - alert: CircuitBreakerOpen
+    expr: {__name__=~".*_circuit_breaker_state",state="open"} == 1
+    for: 1m
+    labels:
+      severity: warning
+    annotations:
+      summary: "Circuit breaker open for {{ $labels.name }}"
+      description: "Circuit breaker is open for {{ $labels.name }}, requests are being rejected"

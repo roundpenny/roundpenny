@@ -12,6 +12,7 @@ import (
 
 	"github.com/roundup-platform/pkg/config"
 	"github.com/roundup-platform/pkg/cors"
+	"github.com/roundup-platform/pkg/idempotency"
 	"github.com/roundup-platform/pkg/db"
 	"github.com/roundup-platform/pkg/monitoring"
 	"github.com/roundup-platform/pkg/kafka"
@@ -66,6 +67,7 @@ func main() {
 	}
 	defer producer.Close()
 
+	idempClient := idempotency.NewClient()
 	repo := repository.NewTransactionRepository(pool)
 	svc := service.NewTransactionService(repo, producer)
 	metrics := monitoring.New("transaction")
@@ -78,7 +80,7 @@ func main() {
 		w.WriteHeader(http.StatusOK)
 		w.Write([]byte(`{"status":"ok"}`))
 	})
-	mux.HandleFunc("POST /v1/transactions", h.Create)
+	mux.Handle("POST /v1/transactions", idempotency.Middleware(idempClient, http.HandlerFunc(h.Create)))
 	mux.HandleFunc("GET /v1/transactions/{id}", h.GetByID)
 	mux.HandleFunc("GET /v1/transactions", h.ListByUser)
 	mux.HandleFunc("POST /v1/transactions/webhook/{provider}", h.Webhook)
@@ -93,7 +95,7 @@ func main() {
 
 	srv := &http.Server{
 		Addr:         fmt.Sprintf(":%s", port),
-		Handler:      cors.Middleware(mux),
+		Handler:      cors.Middleware(monitoring.MetricsMiddleware(metrics, mux)),
 		ReadTimeout:  10 * time.Second,
 		WriteTimeout: 10 * time.Second,
 		IdleTimeout:  30 * time.Second,

@@ -3,7 +3,7 @@ package service
 import (
 	"context"
 	"fmt"
-	"log"
+	"log/slog"
 
 	"github.com/google/uuid"
 	"github.com/roundup-platform/pkg/event"
@@ -65,11 +65,10 @@ func (s *InvestmentService) InvestRoundUp(ctx context.Context, userID uuid.UUID,
 		Topic:   event.TopicInvestmentCreated,
 		Payload: evt,
 	}); err != nil {
-		log.Printf("investment publish warning: %v", err)
+		slog.Warn("investment publish warning", "error", err)
 	}
 
-	log.Printf("invested: user=%s amount=%.2f portfolio=%s",
-		userID, netAmount, portfolio.ID)
+	slog.Info("invested", "user", userID, "amount", netAmount, "portfolio", portfolio.ID)
 
 	return nil
 }

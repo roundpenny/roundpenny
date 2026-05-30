@@ -1,10 +1,18 @@
 package config
 
 import (
+	"context"
 	"os"
 	"strconv"
 	"strings"
 )
+
+// SecretManager defines the interface for retrieving secrets.
+// Compatible with secrets.Manager from github.com/roundup-platform/pkg/secrets.
+type SecretManager interface {
+	Get(ctx context.Context, key string) (string, error)
+	Close() error
+}
 
 type Config struct {
 	JWTSecret       string
@@ -22,8 +30,25 @@ type Config struct {
 	KafkaTLSCA      string
 }
 
-func Load() *Config {
-	return &Config{
+type optionState struct {
+	secrets SecretManager
+}
+
+type Option func(*optionState)
+
+func WithSecrets(sm SecretManager) Option {
+	return func(s *optionState) {
+		s.secrets = sm
+	}
+}
+
+func Load(opts ...Option) *Config {
+	state := new(optionState)
+	for _, opt := range opts {
+		opt(state)
+	}
+
+	cfg := &Config{
 		JWTSecret:       getEnv("JWT_SECRET", "dev-secret-change-in-production"),
 		TLSCertFile:     getEnv("TLS_CERT_FILE", ""),
 		TLSKeyFile:      getEnv("TLS_KEY_FILE", ""),
@@ -38,6 +63,15 @@ func Load() *Config {
 		KafkaTLSKey:     getEnv("KAFKA_TLS_KEY", ""),
 		KafkaTLSCA:      getEnv("KAFKA_TLS_CA", ""),
 	}
+
+	if state.secrets != nil {
+		ctx := context.Background()
+		if v, err := state.secrets.Get(ctx, "JWT_SECRET"); err == nil {
+			cfg.JWTSecret = v
+		}
+	}
+
+	return cfg
 }
 
 func getEnv(key, def string) string {

@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"net/http"
+	"strconv"
 	"strings"
 	"time"
 
@@ -65,6 +66,16 @@ func (h *AnalyticsHandler) ListEvents(w http.ResponseWriter, r *http.Request) {
 
 	page := 1
 	pageSize := 20
+	if p := r.URL.Query().Get("page"); p != "" {
+		if n, err := strconv.Atoi(p); err == nil && n > 0 {
+			page = n
+		}
+	}
+	if ps := r.URL.Query().Get("page_size"); ps != "" {
+		if n, err := strconv.Atoi(ps); err == nil && n > 0 && n <= 100 {
+			pageSize = n
+		}
+	}
 
 	resp, err := h.svc.GetUserEvents(r.Context(), userID, page, pageSize)
 	if err != nil {

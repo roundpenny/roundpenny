@@ -87,7 +87,7 @@ func main() {
 
 	srv := &http.Server{
 		Addr:         fmt.Sprintf(":%s", port),
-		Handler:      cors.Middleware(mux),
+		Handler:      cors.Middleware(monitoring.MetricsMiddleware(metrics, mux)),
 		ReadTimeout:  10 * time.Second,
 		WriteTimeout: 10 * time.Second,
 		IdleTimeout:  30 * time.Second,

@@ -3,6 +3,8 @@ package engine
 import (
 	"context"
 	"encoding/json"
+	"errors"
+	"sync"
 	"testing"
 
 	"github.com/google/uuid"
@@ -12,9 +14,10 @@ import (
 )
 
 type mockRoundUpRepo struct {
-	getUserPreferencesFn func(ctx context.Context, userID uuid.UUID) (*repository.UserPreference, error)
-	getDailyRoundUpTotalFn func(ctx context.Context, userID uuid.UUID) (float64, error)
-	createRoundUpFn     func(ctx context.Context, ru *repository.RoundUpRecord) error
+	getUserPreferencesFn    func(ctx context.Context, userID uuid.UUID) (*repository.UserPreference, error)
+	getDailyRoundUpTotalFn  func(ctx context.Context, userID uuid.UUID) (float64, error)
+	createRoundUpFn         func(ctx context.Context, ru *repository.RoundUpRecord) error
+	updateRoundUpStatusFn   func(ctx context.Context, id uuid.UUID, status string) error
 }
 
 func (m *mockRoundUpRepo) GetUserPreferences(ctx context.Context, userID uuid.UUID) (*repository.UserPreference, error) {
@@ -27,6 +30,9 @@ func (m *mockRoundUpRepo) CreateRoundUp(ctx context.Context, ru *repository.Roun
 	return m.createRoundUpFn(ctx, ru)
 }
 func (m *mockRoundUpRepo) UpdateRoundUpStatus(ctx context.Context, id uuid.UUID, status string) error {
+	if m.updateRoundUpStatusFn != nil {
+		return m.updateRoundUpStatusFn(ctx, id, status)
+	}
 	return nil
 }
 
@@ -195,6 +201,239 @@ func TestHandleTransactionSettled_FullyCapped(t *testing.T) {
 	}))
 	if err != nil {
 		t.Fatalf("expected no error, got %v", err)
+	}
+}
+
+func TestCalculate_RoundUpZeroAmount(t *testing.T) {
+	result := Calculate(0.00, 1.00, 1)
+	if !fequal(result, 0, 0.001) {
+		t.Fatalf("expected 0 for 0.00 amount, got %g", result)
+	}
+}
+
+func TestCalculate_LargeAmount(t *testing.T) {
+	result := Calculate(999999.99, 1.00, 1)
+	if !fequal(result, 0.01, 0.001) {
+		t.Fatalf("expected ~0.01 for 999999.99, got %g", result)
+	}
+}
+
+func TestCalculate_LargeAmountWithMultiplier(t *testing.T) {
+	result := Calculate(1234567.89, 0.05, 10)
+	expected := 0.01 * 10
+	if !fequal(result, expected, 0.001) {
+		t.Fatalf("expected %g for large amount with custom nearest and multiplier, got %g", expected, result)
+	}
+}
+
+func TestCalculate_ZeroAmountWithMultiplier(t *testing.T) {
+	result := Calculate(0.00, 1.00, 5)
+	if !fequal(result, 0, 0.001) {
+		t.Fatalf("expected 0 for zero amount regardless of multiplier, got %g", result)
+	}
+}
+
+func TestHandleTransactionSettled_ZeroRoundUp(t *testing.T) {
+	var published bool
+	engine := NewRoundUpEngine(&mockRoundUpRepo{
+		getUserPreferencesFn: func(ctx context.Context, userID uuid.UUID) (*repository.UserPreference, error) {
+			return &repository.UserPreference{
+				RoundToNearest:  1.00,
+				MaxDailyRoundup: 5.00,
+				Multiplier:      1,
+			}, nil
+		},
+		getDailyRoundUpTotalFn: func(ctx context.Context, userID uuid.UUID) (float64, error) {
+			return 0, nil
+		},
+	}, &mockREProducer{
+		publishFn: func(ctx context.Context, msg kafka.Message) error {
+			published = true
+			return nil
+		},
+	})
+
+	err := engine.HandleTransaction(context.Background(), event.TopicTransactionSettled, uuid.New().String(), mustJSON(event.TransactionSettled{
+		TransactionID: uuid.New().String(),
+		UserID:        uuid.New().String(),
+		Amount:        0.00,
+		Currency:      "USD",
+	}))
+	if err != nil {
+		t.Fatalf("expected no error for zero amount, got %v", err)
+	}
+	if published {
+		t.Fatal("expected no event published for zero round-up")
+	}
+}
+
+func TestHandleTransactionSettled_NegativeAmount(t *testing.T) {
+	var published bool
+	engine := NewRoundUpEngine(&mockRoundUpRepo{
+		getUserPreferencesFn: func(ctx context.Context, userID uuid.UUID) (*repository.UserPreference, error) {
+			return &repository.UserPreference{
+				RoundToNearest:  1.00,
+				MaxDailyRoundup: 5.00,
+				Multiplier:      1,
+			}, nil
+		},
+		getDailyRoundUpTotalFn: func(ctx context.Context, userID uuid.UUID) (float64, error) {
+			return 0, nil
+		},
+	}, &mockREProducer{
+		publishFn: func(ctx context.Context, msg kafka.Message) error {
+			published = true
+			return nil
+		},
+	})
+
+	err := engine.HandleTransaction(context.Background(), event.TopicTransactionSettled, uuid.New().String(), mustJSON(event.TransactionSettled{
+		TransactionID: uuid.New().String(),
+		UserID:        uuid.New().String(),
+		Amount:        -50.00,
+		Currency:      "USD",
+	}))
+	if err != nil {
+		t.Fatalf("expected no error for negative amount, got %v", err)
+	}
+	if published {
+		t.Fatal("expected no event published for negative amount")
+	}
+}
+
+func TestHandleTransactionSettled_VeryLargeAmount(t *testing.T) {
+	var published bool
+	var capturedRoundUp float64
+	engine := NewRoundUpEngine(&mockRoundUpRepo{
+		getUserPreferencesFn: func(ctx context.Context, userID uuid.UUID) (*repository.UserPreference, error) {
+			return &repository.UserPreference{
+				RoundToNearest:  0.01,
+				MaxDailyRoundup: 1000000.00,
+				Multiplier:      2,
+			}, nil
+		},
+		getDailyRoundUpTotalFn: func(ctx context.Context, userID uuid.UUID) (float64, error) {
+			return 0, nil
+		},
+		createRoundUpFn: func(ctx context.Context, ru *repository.RoundUpRecord) error {
+			capturedRoundUp = ru.RoundUpAmount
+			return nil
+		},
+	}, &mockREProducer{
+		publishFn: func(ctx context.Context, msg kafka.Message) error {
+			published = true
+			return nil
+		},
+	})
+
+	err := engine.HandleTransaction(context.Background(), event.TopicTransactionSettled, uuid.New().String(), mustJSON(event.TransactionSettled{
+		TransactionID: uuid.New().String(),
+		UserID:        uuid.New().String(),
+		Amount:        99999999.99,
+		Currency:      "USD",
+	}))
+	if err != nil {
+		t.Fatalf("expected no error for large amount, got %v", err)
+	}
+	if !published {
+		t.Fatal("expected event to be published for large amount")
+	}
+	if capturedRoundUp <= 0 {
+		t.Fatalf("expected positive round-up for large amount, got %g", capturedRoundUp)
+	}
+}
+
+func TestHandleTransactionSettled_PublishFailure(t *testing.T) {
+	var statusUpdated bool
+	var updatedStatus string
+	engine := NewRoundUpEngine(&mockRoundUpRepo{
+		getUserPreferencesFn: func(ctx context.Context, userID uuid.UUID) (*repository.UserPreference, error) {
+			return &repository.UserPreference{
+				RoundToNearest:  1.00,
+				MaxDailyRoundup: 5.00,
+				Multiplier:      1,
+			}, nil
+		},
+		getDailyRoundUpTotalFn: func(ctx context.Context, userID uuid.UUID) (float64, error) {
+			return 0, nil
+		},
+		createRoundUpFn: func(ctx context.Context, ru *repository.RoundUpRecord) error {
+			return nil
+		},
+		updateRoundUpStatusFn: func(ctx context.Context, id uuid.UUID, status string) error {
+			statusUpdated = true
+			updatedStatus = status
+			return nil
+		},
+	}, &mockREProducer{
+		publishFn: func(ctx context.Context, msg kafka.Message) error {
+			return errors.New("kafka unavailable")
+		},
+	})
+
+	err := engine.HandleTransaction(context.Background(), event.TopicTransactionSettled, uuid.New().String(), mustJSON(event.TransactionSettled{
+		TransactionID: uuid.New().String(),
+		UserID:        uuid.New().String(),
+		Amount:        7.12,
+		Currency:      "USD",
+	}))
+	if err == nil {
+		t.Fatal("expected error for publish failure")
+	}
+	if !statusUpdated {
+		t.Fatal("expected UpdateRoundUpStatus to be called on publish failure")
+	}
+	if updatedStatus != "failed" {
+		t.Fatalf("expected status 'failed', got %q", updatedStatus)
+	}
+}
+
+func TestHandleTransactionSettled_ConcurrentRoundups(t *testing.T) {
+	var mu sync.Mutex
+	createCount := 0
+
+	engine := NewRoundUpEngine(&mockRoundUpRepo{
+		getUserPreferencesFn: func(ctx context.Context, userID uuid.UUID) (*repository.UserPreference, error) {
+			return &repository.UserPreference{
+				RoundToNearest:  1.00,
+				MaxDailyRoundup: 50.00,
+				Multiplier:      1,
+			}, nil
+		},
+		getDailyRoundUpTotalFn: func(ctx context.Context, userID uuid.UUID) (float64, error) {
+			return 0, nil
+		},
+		createRoundUpFn: func(ctx context.Context, ru *repository.RoundUpRecord) error {
+			mu.Lock()
+			createCount++
+			mu.Unlock()
+			return nil
+		},
+	}, &mockREProducer{
+		publishFn: func(ctx context.Context, msg kafka.Message) error {
+			return nil
+		},
+	})
+
+	n := 20
+	var wg sync.WaitGroup
+	wg.Add(n)
+
+	for i := 0; i < n; i++ {
+		go func(i int) {
+			defer wg.Done()
+			_ = engine.HandleTransaction(context.Background(), event.TopicTransactionSettled, uuid.New().String(), mustJSON(event.TransactionSettled{
+				TransactionID: uuid.New().String(),
+				UserID:        uuid.New().String(),
+				Amount:        10.01 + float64(i),
+				Currency:      "USD",
+			}))
+		}(i)
+	}
+
+	wg.Wait()
+	if createCount != n {
+		t.Fatalf("expected %d round-ups created, got %d", n, createCount)
 	}
 }
 

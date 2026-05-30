@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"net/http"
+	"strconv"
 	"strings"
 
 	"github.com/golang-jwt/jwt/v5"
@@ -110,6 +111,16 @@ func (h *FraudHandler) UpdateRule(w http.ResponseWriter, r *http.Request) {
 func (h *FraudHandler) ListRules(w http.ResponseWriter, r *http.Request) {
 	page := 1
 	pageSize := 20
+	if p := r.URL.Query().Get("page"); p != "" {
+		if n, err := strconv.Atoi(p); err == nil && n > 0 {
+			page = n
+		}
+	}
+	if ps := r.URL.Query().Get("page_size"); ps != "" {
+		if n, err := strconv.Atoi(ps); err == nil && n > 0 && n <= 100 {
+			pageSize = n
+		}
+	}
 
 	resp, err := h.ruleSvc.ListRules(r.Context(), page, pageSize)
 	if err != nil {
@@ -171,6 +182,16 @@ func (h *FraudHandler) GetAlert(w http.ResponseWriter, r *http.Request) {
 func (h *FraudHandler) ListAlerts(w http.ResponseWriter, r *http.Request) {
 	page := 1
 	pageSize := 20
+	if p := r.URL.Query().Get("page"); p != "" {
+		if n, err := strconv.Atoi(p); err == nil && n > 0 {
+			page = n
+		}
+	}
+	if ps := r.URL.Query().Get("page_size"); ps != "" {
+		if n, err := strconv.Atoi(ps); err == nil && n > 0 && n <= 100 {
+			pageSize = n
+		}
+	}
 
 	resp, err := h.alertSvc.ListAlerts(r.Context(), page, pageSize)
 	if err != nil {
@@ -230,6 +251,16 @@ func (h *FraudHandler) GetAlertsByUser(w http.ResponseWriter, r *http.Request) {
 
 	page := 1
 	pageSize := 20
+	if p := r.URL.Query().Get("page"); p != "" {
+		if n, err := strconv.Atoi(p); err == nil && n > 0 {
+			page = n
+		}
+	}
+	if ps := r.URL.Query().Get("page_size"); ps != "" {
+		if n, err := strconv.Atoi(ps); err == nil && n > 0 && n <= 100 {
+			pageSize = n
+		}
+	}
 
 	resp, err := h.alertSvc.GetAlertsByUser(r.Context(), userID, page, pageSize)
 	if err != nil {
@@ -245,6 +276,16 @@ func (h *FraudHandler) GetAlertsBySeverity(w http.ResponseWriter, r *http.Reques
 
 	page := 1
 	pageSize := 20
+	if p := r.URL.Query().Get("page"); p != "" {
+		if n, err := strconv.Atoi(p); err == nil && n > 0 {
+			page = n
+		}
+	}
+	if ps := r.URL.Query().Get("page_size"); ps != "" {
+		if n, err := strconv.Atoi(ps); err == nil && n > 0 && n <= 100 {
+			pageSize = n
+		}
+	}
 
 	resp, err := h.alertSvc.GetAlertsBySeverity(r.Context(), severity, page, pageSize)
 	if err != nil {

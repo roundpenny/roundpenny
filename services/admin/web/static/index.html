@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RoundPenny Admin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:'Inter',sans-serif; background:#0a0e1a; color:#e0e6f0; }
+.container { max-width:1200px; margin:0 auto; padding:0 20px; }
+nav { display:flex; justify-content:space-between; align-items:center; padding:16px 20px; background:#111829; border-bottom:1px solid #1a2040; }
+nav .logo { font-size:1.3em; font-weight:800; color:#4fc3f7; }
+nav .logo span { color:#69f0ae; }
+nav .nav-links { display:flex; gap:20px; align-items:center; }
+nav .nav-links a { color:#90caf9; text-decoration:none; font-size:0.85em; cursor:pointer; padding:6px 12px; border-radius:6px; }
+nav .nav-links a:hover, nav .nav-links a.active { background:#1a2040; color:#4fc3f7; }
+#login-page { display:flex; justify-content:center; align-items:center; min-height:80vh; }
+.login-box { background:#111829; padding:40px; border-radius:12px; border:1px solid #1a2040; width:360px; }
+.login-box h2 { text-align:center; margin-bottom:24px; color:#4fc3f7; }
+.login-box input { width:100%; padding:12px; margin-bottom:12px; background:#0a0e1a; border:1px solid #1a2040; border-radius:6px; color:#e0e6f0; font-size:0.9em; }
+.login-box input:focus { outline:none; border-color:#4fc3f7; }
+.login-box button { width:100%; padding:12px; background:#4fc3f7; color:#0a0e1a; border:none; border-radius:6px; font-weight:700; font-size:1em; cursor:pointer; }
+.login-box button:hover { background:#29b6f6; }
+.login-box .error { color:#ef5350; font-size:0.85em; margin-top:8px; display:none; }
+#app { display:none; }
+.stats-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:16px; margin:20px 0; }
+.stat-card { background:#111829; border:1px solid #1a2040; border-radius:10px; padding:20px; text-align:center; }
+.stat-card .num { font-size:2em; font-weight:800; color:#4fc3f7; }
+.stat-card .label { font-size:0.8em; color:#78909c; margin-top:4px; }
+.section-header { display:flex; justify-content:space-between; align-items:center; margin:24px 0 12px; }
+.section-header h3 { font-size:1.1em; color:#e0e6f0; }
+.section-header select, .section-header input { background:#0a0e1a; border:1px solid #1a2040; border-radius:6px; color:#e0e6f0; padding:6px 10px; font-size:0.85em; }
+table { width:100%; border-collapse:collapse; font-size:0.85em; }
+th { background:#111829; padding:10px 12px; text-align:left; font-weight:600; color:#4fc3f7; border-bottom:1px solid #1a2040; }
+td { padding:10px 12px; border-bottom:1px solid #111829; }
+tr:hover td { background:#111829; }
+.badge { display:inline-block; padding:2px 8px; border-radius:10px; font-size:0.75em; font-weight:600; }
+.badge-success { background:#1b5e20; color:#69f0ae; }
+.badge-warning { background:#e65100; color:#ffcc80; }
+.badge-danger { background:#b71c1c; color:#ef9a9a; }
+.badge-info { background:#0d47a1; color:#90caf9; }
+.btn-sm { padding:4px 12px; border-radius:6px; border:1px solid #1a2040; background:transparent; color:#90caf9; cursor:pointer; font-size:0.8em; }
+.btn-sm:hover { background:#1a2040; }
+.tabs { display:flex; gap:4px; margin-bottom:16px; flex-wrap:wrap; }
+.tab { padding:8px 16px; background:#111829; border:1px solid #1a2040; border-radius:6px; color:#78909c; cursor:pointer; font-size:0.85em; }
+.tab:hover, .tab.active { background:#1a2040; color:#4fc3f7; border-color:#4fc3f7; }
+.modal { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); justify-content:center; align-items:center; z-index:100; }
+.modal-content { background:#111829; border:1px solid #1a2040; border-radius:12px; padding:24px; width:500px; max-width:90%; max-height:80vh; overflow-y:auto; }
+.modal-content h3 { margin-bottom:16px; color:#4fc3f7; }
+.modal-content p { margin-bottom:8px; font-size:0.9em; color:#90caf9; }
+.modal-content select, .modal-content textarea { width:100%; padding:8px; margin:8px 0; background:#0a0e1a; border:1px solid #1a2040; border-radius:6px; color:#e0e6f0; }
+.modal-content button { padding:8px 20px; background:#4fc3f7; color:#0a0e1a; border:none; border-radius:6px; font-weight:600; cursor:pointer; margin-right:8px; }
+.modal-content .btn-close { background:transparent; border:1px solid #1a2040; color:#90caf9; }
+</style>
+</head>
+<body>
+<div id="login-page">
+  <div class="login-box">
+    <h2>RoundPenny Admin</h2>
+    <input type="email" id="login-email" placeholder="Email" value="admin@roundpenny.com">
+    <input type="password" id="login-pass" placeholder="Password" value="admin123">
+    <button onclick="login()">Sign In</button>
+    <div class="error" id="login-error">Invalid credentials</div>
+  </div>
+</div>
+
+<div id="app">
+<nav>
+  <div class="logo">Round<span>Penny</span> Admin</div>
+  <div class="nav-links">
+    <a class="active" onclick="showTab('dashboard')" id="tab-dashboard">Dashboard</a>
+    <a onclick="showTab('users')" id="tab-users">Users</a>
+    <a onclick="showTab('merchants')" id="tab-merchants">Merchants</a>
+    <a onclick="showTab('transactions')" id="tab-transactions">Transactions</a>
+    <a onclick="showTab('fraud')" id="tab-fraud">Fraud</a>
+    <a onclick="showTab('kyc')" id="tab-kyc">KYC</a>
+    <a onclick="logout()" style="color:#ef5350">Logout</a>
+  </div>
+</nav>
+
+<div class="container" style="padding-top:20px">
+  <div id="tab-dashboard-content">
+    <div class="stats-grid" id="stats-grid"></div>
+  </div>
+
+  <div id="tab-users-content" style="display:none">
+    <div class="section-header"><h3>Users</h3></div>
+    <div style="overflow-x:auto"><table><thead><tr>
+      <th>Email</th><th>Name</th><th>KYC</th><th>MFA</th><th>Role</th><th>Created</th><th></th>
+    </tr></thead><tbody id="users-table"></tbody></table></div>
+  </div>
+
+  <div id="tab-merchants-content" style="display:none">
+    <div class="section-header"><h3>Merchants</h3></div>
+    <div style="overflow-x:auto"><table><thead><tr>
+      <th>Name</th><th>Email</th><th>Status</th><th>Fee %</th><th>Country</th><th>Created</th>
+    </tr></thead><tbody id="merchants-table"></tbody></table></div>
+  </div>
+
+  <div id="tab-transactions-content" style="display:none">
+    <div class="section-header"><h3>Transactions</h3></div>
+    <div style="overflow-x:auto"><table><thead><tr>
+      <th>ID</th><th>User</th><th>Amount</th><th>Currency</th><th>Status</th><th>Description</th><th>Date</th>
+    </tr></thead><tbody id="transactions-table"></tbody></table></div>
+  </div>
+
+  <div id="tab-fraud-content" style="display:none">
+    <div class="section-header"><h3>Fraud Alerts</h3></div>
+    <div style="overflow-x:auto"><table><thead><tr>
+      <th>ID</th><th>User</th><th>Severity</th><th>Status</th><th>Description</th><th>Date</th><th></th>
+    </tr></thead><tbody id="fraud-table"></tbody></table></div>
+  </div>
+
+  <div id="tab-kyc-content" style="display:none">
+    <div class="section-header"><h3>KYC Submissions</h3></div>
+    <div style="overflow-x:auto"><table><thead><tr>
+      <th>User</th><th>Name</th><th>Document</th><th>Number</th><th>Status</th><th>Submitted</th><th></th>
+    </tr></thead><tbody id="kyc-table"></tbody></table></div>
+  </div>
+</div>
+</div>
+
+<div class="modal" id="modal"><div class="modal-content" id="modal-body"></div></div>
+
+<script>
+let token = localStorage.getItem('admin_token');
+
+function api(path, opts={}) {
+  opts.headers = opts.headers || {};
+  opts.headers['Authorization'] = 'Bearer ' + token;
+  opts.headers['Content-Type'] = 'application/json';
+  return fetch(path, opts).then(r => r.ok ? r.json() : r.text().then(t => { throw new Error(t) }));
+}
+
+function login() {
+  const email = document.getElementById('login-email').value;
+  const pass = document.getElementById('login-pass').value;
+  fetch('/v1/admin/login', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({email,password})})
+    .then(r => r.ok ? r.json() : (document.getElementById('login-error').style.display='block', Promise.reject()))
+    .then(d => { token = d.access_token; localStorage.setItem('admin_token', token);
+      document.getElementById('login-page').style.display='none'; document.getElementById('app').style.display='block';
+      loadDashboard(); });
+}
+
+function logout() { localStorage.removeItem('admin_token'); location.reload(); }
+
+function showTab(name) {
+  document.querySelectorAll('[id^="tab-"]').forEach(el => el.style.display = el.id.endsWith('-content') ? 'none' : '');
+  document.querySelectorAll('.nav-links a').forEach(a => a.classList.remove('active'));
+  document.getElementById('tab-'+name).classList.add('active');
+  document.getElementById('tab-'+name+'-content').style.display = 'block';
+  if (name === 'dashboard') loadDashboard();
+  else if (name === 'users') loadUsers();
+  else if (name === 'merchants') loadMerchants();
+  else if (name === 'transactions') loadTransactions();
+  else if (name === 'fraud') loadFraud();
+  else if (name === 'kyc') loadKYC();
+}
+
+function loadDashboard() {
+  api('/v1/admin/stats').then(d => {
+    const cards = [
+      {num:d.total_users, label:'Total Users'},
+      {num:d.pending_kyc, label:'Pending KYC'},
+      {num:d.active_merchants, label:'Active Merchants'},
+      {num:d.total_transactions, label:'Transactions'},
+      {num:d.open_fraud_alerts, label:'Open Fraud Alerts'},
+      {num:d.pending_payments, label:'Pending Payments'}
+    ];
+    document.getElementById('stats-grid').innerHTML = cards.map(c =>
+      '<div class="stat-card"><div class="num">'+c.num+'</div><div class="label">'+c.label+'</div></div>'
+    ).join('');
+  }).catch(e => console.error(e));
+}
+
+function loadUsers() {
+  api('/v1/admin/users?page=1&page_size=50').then(d => {
+    const tbody = document.getElementById('users-table');
+    if (!d.data) { tbody.innerHTML = '<tr><td colspan="7">No data</td></tr>'; return; }
+    tbody.innerHTML = d.data.map(u => '<tr>' +
+      '<td>'+u.email+'</td><td>'+u.full_name+'</td>' +
+      '<td><span class="badge badge-'+(u.kyc_status==='approved'?'success':u.kyc_status==='pending'?'warning':'danger')+'">'+u.kyc_status+'</span></td>' +
+      '<td>'+(u.mfa_enabled?'<span class="badge badge-success">On</span>':'<span class="badge badge-info">Off</span>')+'</td>' +
+      '<td>'+u.role+'</td><td>'+new Date(u.created_at).toLocaleDateString()+'</td>' +
+      '<td><button class="btn-sm" onclick="viewUser(\''+u.id+'\')">View</button></td>' +
+      '</tr>').join('');
+  }).catch(e => console.error(e));
+}
+
+function viewUser(id) {
+  api('/v1/admin/users/'+id).then(u => {
+    document.getElementById('modal-body').innerHTML =
+      '<h3>User Detail</h3>' +
+      '<p><strong>ID:</strong> '+u.id+'</p>' +
+      '<p><strong>Email:</strong> '+u.email+'</p>' +
+      '<p><strong>Name:</strong> '+u.full_name+'</p>' +
+      '<p><strong>Phone:</strong> '+(u.phone||'-')+'</p>' +
+      '<p><strong>KYC:</strong> '+u.kyc_status+'</p>' +
+      '<p><strong>MFA:</strong> '+(u.mfa_enabled?'Enabled':'Disabled')+'</p>' +
+      '<p><strong>Role:</strong> '+u.role+'</p>' +
+      '<p><strong>Created:</strong> '+new Date(u.created_at).toLocaleString()+'</p>' +
+      '<hr style="border-color:#1a2040;margin:12px 0">' +
+      '<label>Update KYC Status:</label>' +
+      '<select id="kyc-select"><option value="pending">Pending</option><option value="approved">Approved</option><option value="rejected">Rejected</option></select>' +
+      '<div style="margin-top:8px"><button onclick="updateKYC(\''+id+'\')">Update</button>' +
+      '<button class="btn-close" onclick="closeModal()">Close</button></div>';
+    document.getElementById('modal').style.display = 'flex';
+  });
+}
+
+function updateKYC(id) {
+  const status = document.getElementById('kyc-select').value;
+  api('/v1/admin/users/'+id+'/status', {method:'PUT', body:JSON.stringify({kyc_status:status})})
+    .then(() => { closeModal(); loadUsers(); }).catch(e => console.error(e));
+}
+
+function loadMerchants() {
+  api('/v1/admin/merchants?page=1&page_size=50').then(d => {
+    const tbody = document.getElementById('merchants-table');
+    if (!d.data) { tbody.innerHTML = '<tr><td colspan="6">No data</td></tr>'; return; }
+    tbody.innerHTML = d.data.map(m => '<tr>' +
+      '<td>'+m.name+'</td><td>'+m.email+'</td>' +
+      '<td><span class="badge badge-'+(m.status==='active'?'success':'warning')+'">'+m.status+'</span></td>' +
+      '<td>'+m.fee_percentage+'%</td><td>'+m.country+'</td>' +
+      '<td>'+new Date(m.created_at).toLocaleDateString()+'</td>' +
+      '</tr>').join('');
+  }).catch(e => console.error(e));
+}
+
+function loadTransactions() {
+  api('/v1/admin/transactions?page=1&page_size=50').then(d => {
+    const tbody = document.getElementById('transactions-table');
+    if (!d.data) { tbody.innerHTML = '<tr><td colspan="7">No data</td></tr>'; return; }
+    tbody.innerHTML = d.data.map(t => '<tr>' +
+      '<td style="font-family:monospace;font-size:0.8em">'+t.id.substr(0,8)+'</td>' +
+      '<td style="font-family:monospace;font-size:0.8em">'+t.user_id.substr(0,8)+'</td>' +
+      '<td><strong>$'+Number(t.amount).toFixed(2)+'</strong></td><td>'+t.currency+'</td>' +
+      '<td><span class="badge badge-'+(t.status==='completed'?'success':t.status==='pending'?'warning':'danger')+'">'+t.status+'</span></td>' +
+      '<td>'+(t.description||'-')+'</td><td>'+new Date(t.created_at).toLocaleDateString()+'</td>' +
+      '</tr>').join('');
+  }).catch(e => console.error(e));
+}
+
+function loadFraud() {
+  api('/v1/admin/fraud-alerts?page=1&page_size=50').then(d => {
+    const tbody = document.getElementById('fraud-table');
+    if (!d.data) { tbody.innerHTML = '<tr><td colspan="7">No data</td></tr>'; return; }
+    tbody.innerHTML = d.data.map(a => '<tr>' +
+      '<td style="font-family:monospace;font-size:0.8em">'+a.id.substr(0,8)+'</td>' +
+      '<td style="font-family:monospace;font-size:0.8em">'+a.user_id.substr(0,8)+'</td>' +
+      '<td><span class="badge badge-'+(a.severity==='critical'?'danger':a.severity==='high'?'warning':'info')+'">'+a.severity+'</span></td>' +
+      '<td>'+a.status+'</td><td>'+(a.description||'-')+'</td>' +
+      '<td>'+new Date(a.created_at).toLocaleDateString()+'</td>' +
+      '<td>'+(a.status==='open'?'<button class="btn-sm" onclick="reviewFraud(\''+a.id+'\')">Review</button>':'')+'</td>' +
+      '</tr>').join('');
+  }).catch(e => console.error(e));
+}
+
+function reviewFraud(id) {
+  document.getElementById('modal-body').innerHTML =
+    '<h3>Review Fraud Alert</h3><p>Alert ID: '+id+'</p>' +
+    '<label>Action:</label><select id="fraud-action"><option value="resolved">Resolved</option><option value="false_positive">False Positive</option><option value="investigated">Investigated</option></select>' +
+    '<div style="margin-top:8px"><button onclick="submitFraudReview(\''+id+'\')">Submit</button>' +
+    '<button class="btn-close" onclick="closeModal()">Cancel</button></div>';
+  document.getElementById('modal').style.display = 'flex';
+}
+
+function submitFraudReview(id) {
+  const status = document.getElementById('fraud-action').value;
+  api('/v1/admin/fraud-alerts/'+id+'/review', {method:'POST', body:JSON.stringify({status})})
+    .then(() => { closeModal(); loadFraud(); }).catch(e => console.error(e));
+}
+
+function loadKYC() {
+  api('/v1/admin/kyc-submissions?page=1&page_size=50').then(d => {
+    const tbody = document.getElementById('kyc-table');
+    if (!d.data) { tbody.innerHTML = '<tr><td colspan="7">No data</td></tr>'; return; }
+    tbody.innerHTML = d.data.map(s => '<tr>' +
+      '<td style="font-family:monospace;font-size:0.8em">'+s.user_id.substr(0,8)+'</td>' +
+      '<td>'+s.full_name+'</td><td>'+s.document_type+'</td><td>'+s.document_number+'</td>' +
+      '<td><span class="badge badge-'+(s.status==='approved'?'success':s.status==='pending'?'warning':'danger')+'">'+s.status+'</span></td>' +
+      '<td>'+new Date(s.submitted_at).toLocaleDateString()+'</td>' +
+      '<td>'+(s.status==='pending'?'<button class="btn-sm" onclick="reviewKYC(\''+s.id+'\')">Review</button>':'')+'</td>' +
+      '</tr>').join('');
+  }).catch(e => console.error(e));
+}
+
+function reviewKYC(id) {
+  api('/v1/admin/kyc-submissions?page=1&page_size=1').then(() => {
+    document.getElementById('modal-body').innerHTML =
+      '<h3>Review KYC Submission</h3><p>Submission ID: '+id+'</p>' +
+      '<label>Decision:</label><select id="kyc-decision"><option value="approved">Approve</option><option value="rejected">Reject</option></select>' +
+      '<div id="rejection-div" style="display:none"><label>Rejection Reason:</label><textarea id="kyc-reason" rows="3"></textarea></div>' +
+      '<div style="margin-top:8px"><button onclick="submitKYCReview(\''+id+'\')">Submit</button>' +
+      '<button class="btn-close" onclick="closeModal()">Cancel</button></div>';
+    document.getElementById('kyc-decision').onchange = function() {
+      document.getElementById('rejection-div').style.display = this.value === 'rejected' ? 'block' : 'none';
+    };
+    document.getElementById('modal').style.display = 'flex';
+  });
+}
+
+function submitKYCReview(id) {
+  const status = document.getElementById('kyc-decision').value;
+  const reason = document.getElementById('kyc-reason')?.value || '';
+  api('/v1/admin/kyc-submissions/'+id+'/review', {method:'POST', body:JSON.stringify({status, rejection_reason: reason})})
+    .then(() => { closeModal(); loadKYC(); }).catch(e => console.error(e));
+}
+
+function closeModal() { document.getElementById('modal').style.display = 'none'; }
+window.onclick = function(e) { if (e.target === document.getElementById('modal')) closeModal(); }
+
+// Auto-login if token exists
+if (token) { document.getElementById('login-page').style.display='none'; document.getElementById('app').style.display='block'; loadDashboard(); }
+</script>
+</body>
+</html>

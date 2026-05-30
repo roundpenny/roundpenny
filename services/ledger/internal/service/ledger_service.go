@@ -2,7 +2,7 @@ package service
 
 import (
 	"context"
-	"log"
+	"log/slog"
 
 	"github.com/google/uuid"
 	"github.com/roundup-platform/pkg/event"
@@ -56,7 +56,7 @@ func (s *LedgerService) RecordFee(ctx context.Context, evt event.FeeCharged) err
 }
 
 func (s *LedgerService) RecordInvestment(ctx context.Context, evt event.InvestmentCreated) error {
-	log.Printf("ledger: investment recorded user=%s amount=%.2f", evt.UserID, evt.Amount)
+	slog.Info("ledger: investment recorded", "user", evt.UserID, "amount", evt.Amount)
 	return nil
 }
 

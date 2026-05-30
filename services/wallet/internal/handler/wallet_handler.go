@@ -3,6 +3,7 @@ package handler
 import (
 	"encoding/json"
 	"net/http"
+	"strconv"
 
 	"github.com/google/uuid"
 	"github.com/roundup-platform/services/wallet/internal/service"
@@ -51,7 +52,20 @@ func (h *WalletHandler) GetTransactions(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	entries, err := h.svc.GetTransactions(r.Context(), userID, 1, 20)
+	page := 1
+	pageSize := 20
+	if p := r.URL.Query().Get("page"); p != "" {
+		if n, err := strconv.Atoi(p); err == nil && n > 0 {
+			page = n
+		}
+	}
+	if ps := r.URL.Query().Get("page_size"); ps != "" {
+		if n, err := strconv.Atoi(ps); err == nil && n > 0 && n <= 100 {
+			pageSize = n
+		}
+	}
+
+	entries, err := h.svc.GetTransactions(r.Context(), userID, page, pageSize)
 	if err != nil {
 		writeError(w, http.StatusInternalServerError, "query error")
 		return

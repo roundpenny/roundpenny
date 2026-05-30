@@ -4,7 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"log"
+	"log/slog"
 
 	"github.com/google/uuid"
 	"github.com/roundup-platform/pkg/event"
@@ -31,7 +31,7 @@ func (c *InvestmentConsumer) HandleRoundUp(ctx context.Context, topic string, ke
 	}
 
 	if err := c.svc.InvestRoundUp(ctx, userID, evt.RoundUpAmount); err != nil {
-		log.Printf("invest failed: %v", err)
+		slog.Error("invest failed", "error", err)
 		return nil
 	}
 

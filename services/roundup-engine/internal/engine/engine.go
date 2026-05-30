@@ -4,7 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"log"
+	"log/slog"
 	"math"
 
 	"github.com/google/uuid"
@@ -105,8 +105,7 @@ func (e *RoundUpEngine) HandleTransaction(ctx context.Context, topic string, key
 		return fmt.Errorf("publish roundup: %w", err)
 	}
 
-	log.Printf("roundup: user=%s tx=%s amount=%.2f -> %.2f (roundup=%.2f)",
-		tx.UserID, tx.TransactionID, tx.Amount, roundedAmount, roundUp)
+	slog.Info("roundup", "user", tx.UserID, "tx", tx.TransactionID, "amount", tx.Amount, "rounded", roundedAmount, "roundup", roundUp)
 
 	return nil
 }

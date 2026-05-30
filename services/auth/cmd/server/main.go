@@ -10,7 +10,9 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/roundup-platform/pkg/cache"
 	"github.com/roundup-platform/pkg/config"
+	"github.com/roundup-platform/pkg/idempotency"
 	"github.com/roundup-platform/pkg/cors"
 	"github.com/roundup-platform/pkg/db"
 	"github.com/roundup-platform/pkg/monitoring"
@@ -60,6 +62,8 @@ func main() {
 	}
 
 	metrics := monitoring.New("auth")
+	cacheClient := cache.NewClient()
+	idempClient := idempotency.NewClient()
 	repo := repository.NewAuthRepository(pool)
 	svc := service.NewAuthService(repo, jwtSecret)
 	h := handler.NewAuthHandler(svc)
@@ -77,8 +81,8 @@ func main() {
 		}
 	}
 	slog.Info("rate limits", "login", loginLimit, "register", registerLimit, "login_env", os.Getenv("RATE_LIMIT_LOGIN"), "register_env", os.Getenv("RATE_LIMIT_REGISTER"))
-	loginLimiter := middleware.NewRateLimiter(loginLimit, time.Minute)
-	registerLimiter := middleware.NewRateLimiter(registerLimit, time.Minute)
+	loginLimiter := middleware.NewRateLimiter(loginLimit, time.Minute, cacheClient)
+	registerLimiter := middleware.NewRateLimiter(registerLimit, time.Minute, cacheClient)
 
 	mux := http.NewServeMux()
 	mux.Handle("GET /metrics", metrics.Handler())
@@ -87,7 +91,8 @@ func main() {
 		w.WriteHeader(http.StatusOK)
 		w.Write([]byte(`{"status":"ok"}`))
 	})
-	mux.Handle("POST /v1/auth/register", registerLimiter.Middleware(http.HandlerFunc(h.Register)))
+	mux.Handle("POST /v1/auth/register", registerLimiter.Middleware(
+		idempotency.Middleware(idempClient, http.HandlerFunc(h.Register))))
 	mux.Handle("POST /v1/auth/login", loginLimiter.Middleware(http.HandlerFunc(h.Login)))
 	mux.HandleFunc("POST /v1/auth/refresh", h.Refresh)
 	mux.HandleFunc("POST /v1/auth/logout", h.Logout)
@@ -112,7 +117,7 @@ func main() {
 
 	srv := &http.Server{
 		Addr:         fmt.Sprintf(":%s", port),
-		Handler:      cors.Middleware(mux),
+		Handler:      cors.Middleware(monitoring.MetricsMiddleware(metrics, mux)),
 		ReadTimeout:  10 * time.Second,
 		WriteTimeout: 10 * time.Second,
 		IdleTimeout:  30 * time.Second,

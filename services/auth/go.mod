@@ -7,13 +7,18 @@ require (
 	github.com/google/uuid v1.6.0
 	github.com/jackc/pgx/v5 v5.5.5
 	github.com/pquerna/otp v1.4.0
+	github.com/redis/go-redis/v9 v9.7.1
+	github.com/roundup-platform/pkg/cache v0.0.0
+	github.com/roundup-platform/pkg/config v0.0.0
 	github.com/roundup-platform/pkg/cors v0.0.0
 	github.com/roundup-platform/pkg/crypto v0.0.0
 	github.com/roundup-platform/pkg/db v0.0.0
+	github.com/roundup-platform/pkg/email v0.0.0
+	github.com/roundup-platform/pkg/idempotency v0.0.0
+	github.com/roundup-platform/pkg/kyc v0.0.0
 	github.com/roundup-platform/pkg/monitoring v0.0.0
 	github.com/roundup-platform/pkg/tls v0.0.0
 	github.com/roundup-platform/pkg/tracing v0.0.0
-	github.com/roundup-platform/pkg/config v0.0.0
 )
 
 require (
@@ -30,6 +35,7 @@ require (
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/cenkalti/backoff/v5 v5.0.3 // indirect
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
+	github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f // indirect
 	github.com/go-logr/logr v1.4.3 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.29.0 // indirect
@@ -54,13 +60,17 @@ require (
 )
 
 replace (
+	github.com/roundup-platform/pkg/cache => ../../pkg/cache
+	github.com/roundup-platform/pkg/config => ../../pkg/config
 	github.com/roundup-platform/pkg/cors => ../../pkg/cors
 	github.com/roundup-platform/pkg/crypto => ../../pkg/crypto
 	github.com/roundup-platform/pkg/db => ../../pkg/db
+	github.com/roundup-platform/pkg/email => ../../pkg/email
+	github.com/roundup-platform/pkg/idempotency => ../../pkg/idempotency
 	github.com/roundup-platform/pkg/event => ../../pkg/event
 	github.com/roundup-platform/pkg/kafka => ../../pkg/kafka
+	github.com/roundup-platform/pkg/kyc => ../../pkg/kyc
 	github.com/roundup-platform/pkg/monitoring => ../../pkg/monitoring
 	github.com/roundup-platform/pkg/tls => ../../pkg/tls
 	github.com/roundup-platform/pkg/tracing => ../../pkg/tracing
-	github.com/roundup-platform/pkg/config => ../../pkg/config
 )

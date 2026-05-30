@@ -3,6 +3,7 @@ package handler
 import (
 	"encoding/json"
 	"net/http"
+	"strconv"
 	"strings"
 
 	"github.com/golang-jwt/jwt/v5"
@@ -133,6 +134,16 @@ func (h *MerchantHandler) DeleteMerchant(w http.ResponseWriter, r *http.Request)
 func (h *MerchantHandler) ListMerchants(w http.ResponseWriter, r *http.Request) {
 	page := 1
 	pageSize := 20
+	if p := r.URL.Query().Get("page"); p != "" {
+		if n, err := strconv.Atoi(p); err == nil && n > 0 {
+			page = n
+		}
+	}
+	if ps := r.URL.Query().Get("page_size"); ps != "" {
+		if n, err := strconv.Atoi(ps); err == nil && n > 0 && n <= 100 {
+			pageSize = n
+		}
+	}
 
 	resp, err := h.svc.ListMerchants(r.Context(), page, pageSize)
 	if err != nil {
@@ -152,6 +163,16 @@ func (h *MerchantHandler) SearchMerchants(w http.ResponseWriter, r *http.Request
 
 	page := 1
 	pageSize := 20
+	if p := r.URL.Query().Get("page"); p != "" {
+		if n, err := strconv.Atoi(p); err == nil && n > 0 {
+			page = n
+		}
+	}
+	if ps := r.URL.Query().Get("page_size"); ps != "" {
+		if n, err := strconv.Atoi(ps); err == nil && n > 0 && n <= 100 {
+			pageSize = n
+		}
+	}
 
 	resp, err := h.svc.SearchMerchants(r.Context(), query, page, pageSize)
 	if err != nil {

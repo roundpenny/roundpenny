@@ -13,10 +13,11 @@ import (
 type Metrics struct {
 	registry *prometheus.Registry
 
-	HttpRequestsTotal  *prometheus.CounterVec
-	HttpRequestDuration *prometheus.HistogramVec
-	KafkaMessagesTotal  *prometheus.CounterVec
-	DbOperationsTotal   *prometheus.CounterVec
+	HttpRequestsTotal    *prometheus.CounterVec
+	HttpRequestDuration  *prometheus.HistogramVec
+	KafkaMessagesTotal   *prometheus.CounterVec
+	DbOperationsTotal    *prometheus.CounterVec
+	CircuitBreakerState  *prometheus.GaugeVec
 }
 
 func New(serviceName string) *Metrics {
@@ -59,10 +60,19 @@ func New(serviceName string) *Metrics {
 		[]string{"operation", "status"},
 	)
 
+	circuitBreakerState := prometheus.NewGaugeVec(
+		prometheus.GaugeOpts{
+			Name: fmt.Sprintf("%s_circuit_breaker_state", name),
+			Help: "Circuit breaker state (0=closed, 1=half-open, 2=open)",
+		},
+		[]string{"name", "state"},
+	)
+
 	registry.MustRegister(httpRequestsTotal)
 	registry.MustRegister(httpRequestDuration)
 	registry.MustRegister(kafkaMessagesTotal)
 	registry.MustRegister(dbOperationsTotal)
+	registry.MustRegister(circuitBreakerState)
 
 	return &Metrics{
 		registry:            registry,
@@ -70,6 +80,7 @@ func New(serviceName string) *Metrics {
 		HttpRequestDuration: httpRequestDuration,
 		KafkaMessagesTotal:  kafkaMessagesTotal,
 		DbOperationsTotal:   dbOperationsTotal,
+		CircuitBreakerState: circuitBreakerState,
 	}
 }
 

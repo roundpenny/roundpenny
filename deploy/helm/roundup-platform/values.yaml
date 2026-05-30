@@ -8,12 +8,15 @@ global:
     url: "postgres://roundup:roundup@postgres:5432/roundup?sslmode=disable"
   kafka:
     brokers: "kafka:9092"
+  redis:
+    addr: "redis:6379"
   jwtSecret: "change-this-in-production-to-a-random-64-char-string"
   migrationsDir: "/app/migrations"
 
 postgres:
   enabled: true
   image: postgres:16-alpine
+  host: postgres
   port: 5432
   database: roundup
   user: roundup
@@ -24,6 +27,12 @@ kafka:
   image: confluentinc/cp-kafka:7.5.0
   port: 9092
   advertisedListeners: PLAINTEXT://kafka:9092
+
+redis:
+  enabled: true
+  image: redis:7-alpine
+  port: 6379
+  resources: {}
 
 zookeeper:
   enabled: true
@@ -39,6 +48,10 @@ authService:
     JWT_SECRET: ""
     PORT: "8081"
     MIGRATIONS_DIR: "/app/migrations"
+    SENDGRID_API_KEY: ""
+    ONFIDO_API_TOKEN: ""
+    EMAIL_FROM: "noreply@roundpenny.com"
+    REDIS_ADDR: ""
   resources: {}
   livenessProbe:
     path: /v1/auth/me
@@ -140,6 +153,9 @@ notificationService:
   env:
     PORT: "8091"
     MIGRATIONS_DIR: "/app/migrations"
+    SENDGRID_API_KEY: ""
+    EMAIL_FROM: "noreply@roundpenny.com"
+    REDIS_ADDR: ""
   resources: {}
 
 merchantService:
@@ -163,6 +179,25 @@ analyticsService:
     PORT: "8093"
     MIGRATIONS_DIR: "/app/migrations"
   resources: {}
+
+adminService:
+  enabled: true
+  replicaCount: 1
+  image: roundup-platform/admin-service
+  port: 8095
+  env:
+    JWT_SECRET: ""
+    PORT: "8095"
+    MIGRATIONS_DIR: "/app/migrations"
+    ADMIN_CREDENTIALS: "admin@roundpenny.com:admin123"
+    REDIS_ADDR: ""
+  resources: {}
+
+backup:
+  enabled: true
+  schedule: "0 */6 * * *"
+  retentionDays: 30
+  storageSize: 10Gi
 
 fraudService:
   enabled: true

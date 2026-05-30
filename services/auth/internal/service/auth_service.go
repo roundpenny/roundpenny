@@ -8,13 +8,17 @@ import (
 	"encoding/hex"
 	"errors"
 	"fmt"
+	"log/slog"
 	"strings"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
 	"github.com/pquerna/otp/totp"
+	"github.com/roundup-platform/pkg/cache"
 	"github.com/roundup-platform/pkg/crypto"
+	"github.com/roundup-platform/pkg/email"
+	"github.com/roundup-platform/pkg/kyc"
 	"github.com/roundup-platform/services/auth/internal/repository"
 )
 
@@ -56,8 +60,11 @@ var (
 )
 
 type AuthService struct {
-	repo      AuthRepository
-	jwtSecret []byte
+	repo        AuthRepository
+	jwtSecret   []byte
+	emailClient *email.Client
+	kycClient   *kyc.Client
+	cacheClient *cache.Client
 }
 
 type Claims struct {
@@ -68,8 +75,11 @@ type Claims struct {
 
 func NewAuthService(repo AuthRepository, jwtSecret string) *AuthService {
 	return &AuthService{
-		repo:      repo,
-		jwtSecret: []byte(jwtSecret),
+		repo:        repo,
+		jwtSecret:   []byte(jwtSecret),
+		emailClient: email.NewClient(),
+		kycClient:   kyc.NewClient(),
+		cacheClient: cache.NewClient(),
 	}
 }
 
@@ -125,6 +135,12 @@ func (s *AuthService) Register(ctx context.Context, req RegisterRequest) (*AuthR
 	if err := s.repo.CreateUser(ctx, user); err != nil {
 		return nil, fmt.Errorf("create user: %w", err)
 	}
+
+	s.emailClient.Send(email.SendEmailParams{
+		To:      user.Email,
+		Subject: "Welcome to RoundPenny!",
+		HTML:    "<h1>Welcome to RoundPenny!</h1><p>Start saving automatically with every purchase. Your spare change adds up fast.</p>",
+	})
 
 	return s.generateTokens(ctx, user)
 }
@@ -202,6 +218,11 @@ func (s *AuthService) Refresh(ctx context.Context, refreshToken string) (*AuthRe
 		return nil, ErrInvalidCredentials
 	}
 
+	blacklisted, _ := s.cacheClient.Exists(ctx, "logout:"+userID.String())
+	if blacklisted {
+		return nil, ErrTokenRevoked
+	}
+
 	tokenHash := hashToken(refreshToken)
 	valid, err := s.repo.GetRefreshToken(ctx, tokenHash)
 	if err != nil {
@@ -224,6 +245,7 @@ func (s *AuthService) Refresh(ctx context.Context, refreshToken string) (*AuthRe
 }
 
 func (s *AuthService) Logout(ctx context.Context, userID uuid.UUID) error {
+	s.cacheClient.Set(ctx, "logout:"+userID.String(), "1", refreshTokenDuration)
 	return s.repo.RevokeUserTokens(ctx, userID)
 }
 
@@ -330,6 +352,13 @@ func (s *AuthService) SendEmailVerification(ctx context.Context, userID uuid.UUI
 		return fmt.Errorf("create verification: %w", err)
 	}
 
+	verifyLink := fmt.Sprintf("https://roundpenny.com/verify-email?token=%s", token)
+	s.emailClient.Send(email.SendEmailParams{
+		To:      user.Email,
+		Subject: "Verify your email address",
+		HTML:    fmt.Sprintf("<h1>Verify your email</h1><p>Click <a href='%s'>here</a> to verify your email address. This link expires in 24 hours.</p>", verifyLink),
+	})
+
 	return nil
 }
 
@@ -363,10 +392,53 @@ func (s *AuthService) SubmitKYC(ctx context.Context, userID uuid.UUID, fullName,
 	if err := s.repo.CreateKYCSubmission(ctx, sub); err != nil {
 		return nil, fmt.Errorf("create kyc submission: %w", err)
 	}
-	if err := s.repo.UpdateKYCStatus(ctx, userID, "approved"); err != nil {
+
+	user, err := s.repo.GetUserByID(ctx, userID)
+	if err != nil {
+		return nil, ErrUserNotFound
+	}
+
+	parts := strings.SplitN(fullName, " ", 2)
+	firstName := parts[0]
+	lastName := ""
+	if len(parts) > 1 {
+		lastName = parts[1]
+	}
+
+	applicant, err := s.kycClient.CreateApplicant(firstName, lastName, user.Email)
+	if err != nil {
+		slog.Error("kyc create applicant failed", "error", err)
+		s.repo.UpdateKYCStatus(ctx, userID, "pending")
+		sub.Status = "pending"
+		return sub, nil
+	}
+
+	check, err := s.kycClient.CreateCheck(applicant.ID, nil)
+	if err != nil {
+		slog.Error("kyc create check failed", "error", err)
+		s.repo.UpdateKYCStatus(ctx, userID, "pending")
+		sub.Status = "pending"
+		return sub, nil
+	}
+
+	status := "pending"
+	if check.Status == "complete" && check.Result == "clear" {
+		status = "approved"
+	} else if check.Result == "consider" || check.Result == "unidentified" {
+		status = "rejected"
+	}
+
+	if err := s.repo.UpdateKYCStatus(ctx, userID, status); err != nil {
 		return nil, fmt.Errorf("update kyc status: %w", err)
 	}
-	sub.Status = "approved"
+	sub.Status = status
+
+	slog.Info("kyc check completed",
+		"user", userID,
+		"status", status,
+		"onfido_check", check.ID,
+	)
+
 	return sub, nil
 }
 

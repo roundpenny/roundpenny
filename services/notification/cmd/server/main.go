@@ -16,6 +16,7 @@ import (
 	"github.com/roundup-platform/pkg/monitoring"
 	"github.com/roundup-platform/pkg/tls"
 	"github.com/roundup-platform/pkg/tracing"
+	"github.com/roundup-platform/pkg/email"
 	"github.com/roundup-platform/services/notification/internal/consumer"
 	"github.com/roundup-platform/services/notification/internal/handler"
 	"github.com/roundup-platform/services/notification/internal/repository"
@@ -60,11 +61,17 @@ func main() {
 	}
 
 	metrics := monitoring.New("notification")
-	repo := repository.NewWebhookRepository(pool)
-	svc := service.NewWebhookService(repo)
-	h := handler.NewWebhookHandler(svc)
 
-	webhookConsumer := consumer.NewWebhookConsumer(svc)
+	webhookRepo := repository.NewWebhookRepository(pool)
+	webhookSvc := service.NewWebhookService(webhookRepo)
+	webhookH := handler.NewWebhookHandler(webhookSvc)
+
+	emailRepo := repository.NewEmailRepository(pool.Pool)
+	emailClient := email.NewClient()
+	emailSvc := service.NewEmailService(emailRepo, emailClient)
+	emailH := handler.NewEmailHandler(emailSvc)
+
+	webhookConsumer := consumer.NewWebhookConsumer(webhookSvc)
 	brokers := os.Getenv("KAFKA_BROKERS")
 	if brokers == "" {
 		brokers = "kafka:9092"
@@ -80,11 +87,14 @@ func main() {
 		w.WriteHeader(http.StatusOK)
 		w.Write([]byte(`{"status":"ok"}`))
 	})
-	mux.HandleFunc("POST /v1/webhooks", h.CreateWebhook)
-	mux.HandleFunc("GET /v1/webhooks/{id}", h.GetWebhook)
-	mux.HandleFunc("GET /v1/webhooks", h.ListUserWebhooks)
-	mux.HandleFunc("PUT /v1/webhooks/{id}", h.UpdateWebhook)
-	mux.HandleFunc("DELETE /v1/webhooks/{id}", h.DeleteWebhook)
+	mux.HandleFunc("POST /v1/webhooks", webhookH.CreateWebhook)
+	mux.HandleFunc("GET /v1/webhooks/{id}", webhookH.GetWebhook)
+	mux.HandleFunc("GET /v1/webhooks", webhookH.ListUserWebhooks)
+	mux.HandleFunc("PUT /v1/webhooks/{id}", webhookH.UpdateWebhook)
+	mux.HandleFunc("DELETE /v1/webhooks/{id}", webhookH.DeleteWebhook)
+
+	mux.HandleFunc("POST /v1/emails/send", emailH.SendEmail)
+	mux.HandleFunc("GET /v1/emails", emailH.ListEmails)
 
 	port := os.Getenv("PORT")
 	if port == "" {
@@ -96,7 +106,7 @@ func main() {
 
 	srv := &http.Server{
 		Addr:         fmt.Sprintf(":%s", port),
-		Handler:      cors.Middleware(mux),
+		Handler:      cors.Middleware(monitoring.MetricsMiddleware(metrics, mux)),
 		ReadTimeout:  10 * time.Second,
 		WriteTimeout: 10 * time.Second,
 		IdleTimeout:  30 * time.Second,

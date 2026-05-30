@@ -9,6 +9,7 @@ require (
 	github.com/roundup-platform/pkg/event v0.0.0
 	github.com/roundup-platform/pkg/kafka v0.0.0
 	github.com/roundup-platform/pkg/monitoring v0.0.0
+	github.com/roundup-platform/pkg/idempotency v0.0.0
 	github.com/roundup-platform/pkg/tls v0.0.0
 	github.com/roundup-platform/pkg/tracing v0.0.0
 	github.com/roundup-platform/pkg/config v0.0.0
@@ -55,6 +56,7 @@ replace (
 	github.com/roundup-platform/pkg/cors => ../../pkg/cors
 	github.com/roundup-platform/pkg/db => ../../pkg/db
 	github.com/roundup-platform/pkg/event => ../../pkg/event
+	github.com/roundup-platform/pkg/idempotency => ../../pkg/idempotency
 	github.com/roundup-platform/pkg/kafka => ../../pkg/kafka
 	github.com/roundup-platform/pkg/monitoring => ../../pkg/monitoring
 	github.com/roundup-platform/pkg/tls => ../../pkg/tls

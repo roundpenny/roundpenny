@@ -3,7 +3,7 @@ package consumer
 import (
 	"context"
 	"encoding/json"
-	"log"
+	"log/slog"
 
 	"github.com/google/uuid"
 	"github.com/roundup-platform/pkg/kafka"
@@ -29,19 +29,19 @@ func (c *WebhookConsumer) Start(ctx context.Context, brokers string, groupID str
 	}
 
 	go func() {
-		log.Printf("webhook consumer starting, topics=%v, group=%s", c.topics, groupID)
+		slog.Info("webhook consumer starting", "topics", c.topics, "group", groupID)
 
 		handler := func(ctx context.Context, topic string, key string, data []byte) error {
 			eventID := uuid.New().String()
 
 			var rawPayload map[string]any
 			if err := json.Unmarshal(data, &rawPayload); err != nil {
-				log.Printf("unmarshal event payload: %v", err)
+				slog.Error("unmarshal event payload", "error", err)
 				return nil
 			}
 
 			if err := c.svc.DeliverEvent(ctx, topic, eventID, data); err != nil {
-				log.Printf("deliver event %s: %v", topic, err)
+				slog.Error("deliver event", "topic", topic, "error", err)
 				return nil
 			}
 
@@ -49,7 +49,7 @@ func (c *WebhookConsumer) Start(ctx context.Context, brokers string, groupID str
 		}
 
 		if err := consumer.Consume(ctx, handler); err != nil {
-			log.Printf("consumer error: %v", err)
+			slog.Error("consumer error", "error", err)
 		}
 	}()
 

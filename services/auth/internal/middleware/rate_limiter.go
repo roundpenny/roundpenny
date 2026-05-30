@@ -1,27 +1,27 @@
 package middleware
 
 import (
+	"context"
 	"encoding/json"
 	"net/http"
-	"sync"
 	"time"
+
+	"github.com/redis/go-redis/v9"
+	"github.com/roundup-platform/pkg/cache"
 )
 
 type RateLimiter struct {
-	mu       sync.Mutex
-	requests map[string][]time.Time
-	limit    int
-	window   time.Duration
+	redis  *cache.Client
+	limit  int
+	window time.Duration
 }
 
-func NewRateLimiter(limit int, window time.Duration) *RateLimiter {
-	rl := &RateLimiter{
-		requests: make(map[string][]time.Time),
-		limit:    limit,
-		window:   window,
+func NewRateLimiter(limit int, window time.Duration, redisClient *cache.Client) *RateLimiter {
+	return &RateLimiter{
+		redis:  redisClient,
+		limit:  limit,
+		window: window,
 	}
-	go rl.cleanup()
-	return rl
 }
 
 func (rl *RateLimiter) Middleware(next http.Handler) http.Handler {
@@ -31,7 +31,9 @@ func (rl *RateLimiter) Middleware(next http.Handler) http.Handler {
 			ip = fwd
 		}
 
-		if !rl.allow(ip) {
+		key := "ratelimit:" + r.URL.Path + ":" + ip
+
+		if !rl.allow(r.Context(), key) {
 			w.Header().Set("Content-Type", "application/json")
 			w.Header().Set("Retry-After", "60")
 			w.WriteHeader(http.StatusTooManyRequests)
@@ -43,50 +45,25 @@ func (rl *RateLimiter) Middleware(next http.Handler) http.Handler {
 	})
 }
 
-func (rl *RateLimiter) allow(key string) bool {
-	rl.mu.Lock()
-	defer rl.mu.Unlock()
+func (rl *RateLimiter) allow(ctx context.Context, key string) bool {
+	windowSec := int64(rl.window.Seconds())
 
-	now := time.Now()
-	cutoff := now.Add(-rl.window)
-
-	times := rl.requests[key]
-	var active []time.Time
-	for _, t := range times {
-		if t.After(cutoff) {
-			active = append(active, t)
-		}
+	count, err := rl.redis.Incr(ctx, key)
+	if err != nil {
+		return true
 	}
 
-	if len(active) >= rl.limit {
-		rl.requests[key] = active
+	if count == 1 {
+		rl.redis.Expire(ctx, key, rl.window)
+	}
+
+	if count > int64(rl.limit) {
+		remaining := time.Duration(windowSec) * time.Second
+		if err == redis.Nil {
+			rl.redis.Expire(ctx, key, remaining)
+		}
 		return false
 	}
 
-	active = append(active, now)
-	rl.requests[key] = active
 	return true
-}
-
-func (rl *RateLimiter) cleanup() {
-	ticker := time.NewTicker(1 * time.Minute)
-	for range ticker.C {
-		rl.mu.Lock()
-		now := time.Now()
-		cutoff := now.Add(-rl.window)
-		for key, times := range rl.requests {
-			var active []time.Time
-			for _, t := range times {
-				if t.After(cutoff) {
-					active = append(active, t)
-				}
-			}
-			if len(active) == 0 {
-				delete(rl.requests, key)
-			} else {
-				rl.requests[key] = active
-			}
-		}
-		rl.mu.Unlock()
-	}
 }

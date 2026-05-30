@@ -4,7 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"log"
+	"log/slog"
 
 	"github.com/google/uuid"
 	"github.com/roundup-platform/pkg/event"
@@ -40,8 +40,7 @@ func (c *RoundUpConsumer) HandleRoundUp(ctx context.Context, topic string, key s
 		return fmt.Errorf("credit: %w", err)
 	}
 
-	log.Printf("wallet credited: user=%s amount=%.2f balance=%.2f",
-		evt.UserID, evt.RoundUpAmount, entry.BalanceAfter)
+	slog.Info("wallet credited", "user", evt.UserID, "amount", evt.RoundUpAmount, "balance", entry.BalanceAfter)
 
 	return nil
 }

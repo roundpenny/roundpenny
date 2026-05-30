@@ -3,7 +3,7 @@ package service
 import (
 	"context"
 	"fmt"
-	"log"
+	"log/slog"
 
 	"github.com/google/uuid"
 	"github.com/roundup-platform/pkg/event"
@@ -32,7 +32,7 @@ func NewFeeService(repo FeeRepository, producer FeeProducer) *FeeService {
 func (s *FeeService) ChargeRoundUpFee(ctx context.Context, roundUpID uuid.UUID, userID uuid.UUID, roundUpAmount float64) error {
 	cfg, err := s.repo.GetActiveConfig(ctx, "roundup")
 	if err != nil {
-		log.Printf("no fee config found, using default 10%%")
+		slog.Info("no fee config found, using default 10%")
 		defaultPct := 10.00
 		cfg = &repository.FeeConfig{
 			FeeType:    "roundup",
@@ -79,15 +79,13 @@ func (s *FeeService) ChargeRoundUpFee(ctx context.Context, roundUpID uuid.UUID, 
 		Topic:   event.TopicFeeCharged,
 		Payload: evt,
 	}); err != nil {
-		log.Printf("fee publish warning: %v", err)
+		slog.Warn("fee publish warning", "error", err)
 	}
 
 	if cfg.Percentage != nil {
-		log.Printf("fee charged: user=%s amount=%.4f (%.0f%% of %.2f)",
-			userID, feeAmount, *cfg.Percentage, roundUpAmount)
+		slog.Info("fee charged", "user", userID, "amount", feeAmount, "percentage", *cfg.Percentage, "total", roundUpAmount)
 	} else {
-		log.Printf("fee charged: user=%s amount=%.4f (flat fee)",
-			userID, feeAmount)
+		slog.Info("fee charged", "user", userID, "amount", feeAmount, "type", "flat")
 	}
 
 	return nil

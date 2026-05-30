@@ -4,7 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"log"
+	"log/slog"
 
 	"github.com/google/uuid"
 	"github.com/roundup-platform/pkg/event"
@@ -36,7 +36,7 @@ func (c *FeeConsumer) HandleRoundUp(ctx context.Context, topic string, key strin
 	}
 
 	if err := c.svc.ChargeRoundUpFee(ctx, txID, userID, evt.RoundUpAmount); err != nil {
-		log.Printf("fee charge failed: %v", err)
+		slog.Error("fee charge failed", "error", err)
 		return nil
 	}
 

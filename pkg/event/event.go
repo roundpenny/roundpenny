@@ -49,10 +49,41 @@ type InvestmentCreated struct {
 	Amount    float64 `json:"amount"`
 }
 
+type SubscriptionCreated struct {
+	SubscriptionID string  `json:"subscription_id"`
+	UserID         string  `json:"user_id"`
+	PlanID         string  `json:"plan_id"`
+	Amount         float64 `json:"amount"`
+	Currency       string  `json:"currency"`
+}
+
+type SubscriptionCancelled struct {
+	SubscriptionID string `json:"subscription_id"`
+	UserID         string `json:"user_id"`
+}
+
+type SubscriptionRenewed struct {
+	SubscriptionID string  `json:"subscription_id"`
+	UserID         string  `json:"user_id"`
+	Amount         float64 `json:"amount"`
+	Currency       string  `json:"currency"`
+}
+
+type PaymentFailed struct {
+	SubscriptionID string  `json:"subscription_id"`
+	UserID         string  `json:"user_id"`
+	Amount         float64 `json:"amount"`
+	Currency       string  `json:"currency"`
+}
+
 const (
-	TopicTransactionSettled = "tx.settled"
-	TopicRoundUpCalculated  = "roundup.calculated"
-	TopicWalletCredited     = "wallet.credited"
-	TopicFeeCharged         = "fee.charged"
-	TopicInvestmentCreated  = "investment.created"
+	TopicTransactionSettled  = "tx.settled"
+	TopicRoundUpCalculated   = "roundup.calculated"
+	TopicWalletCredited      = "wallet.credited"
+	TopicFeeCharged          = "fee.charged"
+	TopicInvestmentCreated   = "investment.created"
+	TopicSubscriptionCreated = "subscription.created"
+	TopicSubscriptionCancelled = "subscription.cancelled"
+	TopicSubscriptionRenewed = "subscription.renewed"
+	TopicPaymentFailed       = "subscription.payment_failed"
 )

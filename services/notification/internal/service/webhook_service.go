@@ -6,7 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"log"
+	"log/slog"
 	"net/http"
 	"time"
 
@@ -197,7 +197,7 @@ func (s *WebhookService) DeliverEvent(ctx context.Context, eventType string, eve
 		}
 
 		if err := s.repo.CreateDelivery(ctx, d); err != nil {
-			log.Printf("create delivery record: %v", err)
+			slog.Error("create delivery record", "error", err)
 			continue
 		}
 

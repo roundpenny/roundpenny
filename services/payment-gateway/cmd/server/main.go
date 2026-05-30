@@ -12,6 +12,7 @@ import (
 
 	"github.com/roundup-platform/pkg/config"
 	"github.com/roundup-platform/pkg/cors"
+	"github.com/roundup-platform/pkg/idempotency"
 	"github.com/roundup-platform/pkg/db"
 	"github.com/roundup-platform/pkg/monitoring"
 	stripepkg "github.com/roundup-platform/pkg/stripe"
@@ -60,6 +61,7 @@ func main() {
 	}
 
 	metrics := monitoring.New("payment_gateway")
+	idempClient := idempotency.NewClient()
 	repo := repository.NewPaymentRepository(pool)
 	stripeClient := stripepkg.NewClient()
 	svc := service.NewPaymentService(repo, stripeClient)
@@ -72,7 +74,7 @@ func main() {
 		w.WriteHeader(http.StatusOK)
 		w.Write([]byte(`{"status":"ok"}`))
 	})
-	mux.HandleFunc("POST /v1/payments", h.CreatePayment)
+	mux.Handle("POST /v1/payments", idempotency.Middleware(idempClient, http.HandlerFunc(h.CreatePayment)))
 	mux.HandleFunc("GET /v1/payments/{id}", h.GetPayment)
 	mux.HandleFunc("GET /v1/payments", h.ListUserPayments)
 	mux.HandleFunc("POST /v1/payments/{id}/confirm", h.ConfirmPayment)
@@ -88,7 +90,7 @@ func main() {
 
 	srv := &http.Server{
 		Addr:         fmt.Sprintf(":%s", port),
-		Handler:      cors.Middleware(mux),
+		Handler:      cors.Middleware(monitoring.MetricsMiddleware(metrics, mux)),
 		ReadTimeout:  10 * time.Second,
 		WriteTimeout: 10 * time.Second,
 		IdleTimeout:  30 * time.Second,

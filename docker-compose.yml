@@ -1,4 +1,23 @@
 services:
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  redis-exporter:
+    image: oliver006/redis_exporter:v1.64.0-alpine
+    command:
+      - "--redis.addr=redis://redis:6379"
+    ports:
+      - "9121:9121"
+    depends_on:
+      - redis
+
   postgres:
     image: postgres:16-alpine
     environment:
@@ -39,6 +58,8 @@ services:
         condition: service_healthy
       kafka:
         condition: service_started
+      redis:
+        condition: service_started
     environment:
       DATABASE_URL: postgres://roundup:roundup@postgres:5432/roundup?sslmode=disable
       KAFKA_BROKERS: kafka:9092
@@ -48,6 +69,10 @@ services:
       KAFKA_TLS_ENABLED: "false"
       CORS_ORIGINS: "http://localhost:3000,http://localhost:8080"
       OTLP_ENDPOINT: tempo:4317
+      REDIS_ADDR: redis:6379
+      SENDGRID_API_KEY: "${SENDGRID_API_KEY:-}"
+      ONFIDO_API_TOKEN: "${ONFIDO_API_TOKEN:-}"
+      EMAIL_FROM: "${EMAIL_FROM:-noreply@roundpenny.com}"
       # TLS_CERT_FILE: /tls/cert.pem
       # TLS_KEY_FILE: /tls/key.pem
     ports:
@@ -71,6 +96,7 @@ services:
       KAFKA_TLS_ENABLED: "false"
       CORS_ORIGINS: "http://localhost:3000,http://localhost:8080"
       OTLP_ENDPOINT: tempo:4317
+      REDIS_ADDR: redis:6379
       # TLS_CERT_FILE: /tls/cert.pem
       # TLS_KEY_FILE: /tls/key.pem
     ports:
@@ -303,10 +329,55 @@ services:
       KAFKA_TLS_ENABLED: "false"
       CORS_ORIGINS: "http://localhost:3000,http://localhost:8080"
       OTLP_ENDPOINT: tempo:4317
+      SENDGRID_API_KEY: "${SENDGRID_API_KEY:-}"
+      EMAIL_FROM: "${EMAIL_FROM:-noreply@roundpenny.com}"
       # TLS_CERT_FILE: /tls/cert.pem
       # TLS_KEY_FILE: /tls/key.pem
     ports:
       - "8091:8091"
+    # volumes:
+    #   - ./certs:/tls:ro
+
+  admin-service:
+    build:
+      context: .
+      dockerfile: services/admin/Dockerfile
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgres://roundup:roundup@postgres:5432/roundup?sslmode=disable
+      JWT_SECRET: roundup-dev-jwt-secret-min-32-chars!!
+      PORT: "8095"
+      MIGRATIONS_DIR: /app/migrations
+      CORS_ORIGINS: "http://localhost:3000,http://localhost:8080"
+      OTLP_ENDPOINT: tempo:4317
+      ADMIN_CREDENTIALS: admin@roundpenny.com:admin123
+    ports:
+      - "8095:8095"
+
+  subscription-service:
+    build:
+      context: .
+      dockerfile: services/subscription/Dockerfile
+    depends_on:
+      postgres:
+        condition: service_healthy
+      kafka:
+        condition: service_started
+    environment:
+      DATABASE_URL: postgres://roundup:roundup@postgres:5432/roundup?sslmode=disable
+      KAFKA_BROKERS: kafka:9092
+      JWT_SECRET: roundup-dev-jwt-secret-min-32-chars!!
+      PORT: "8096"
+      MIGRATIONS_DIR: /app/migrations
+      KAFKA_TLS_ENABLED: "false"
+      CORS_ORIGINS: "http://localhost:3000,http://localhost:8080"
+      OTLP_ENDPOINT: tempo:4317
+      # TLS_CERT_FILE: /tls/cert.pem
+      # TLS_KEY_FILE: /tls/key.pem
+    ports:
+      - "8096:8096"
     # volumes:
     #   - ./certs:/tls:ro
 
@@ -396,6 +467,10 @@ services:
       analytics-service:
         condition: service_started
       fraud-service:
+        condition: service_started
+      admin-service:
+        condition: service_started
+      subscription-service:
         condition: service_started
     environment:
       KONG_DATABASE: "off"
