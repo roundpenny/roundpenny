@@ -129,11 +129,16 @@
     footer .social a { color: #546e7a; font-size: 1.2em; text-decoration: none; transition: color 0.2s; }
     footer .social a:hover { color: #4fc3f7; }
 
-    .cookie-banner { position: fixed; bottom: 0; left: 0; right: 0; background: #0d1326; border-top: 1px solid #1a2040; padding: 16px 24px; display: none; justify-content: space-between; align-items: center; gap: 16px; z-index: 1000; }
-    .cookie-banner p { font-size: 0.85em; color: #78909c; }
-    .cookie-banner a { color: #4fc3f7; }
-    .cookie-banner .btn-sm { background: #4fc3f7; color: #0a0e1a; border: none; padding: 8px 20px; border-radius: 6px; font-weight: 600; cursor: pointer; white-space: nowrap; }
-    .cookie-banner .btn-sm:hover { background: #29b6f6; }
+    .cookie-banner { position: fixed; bottom: 0; left: 0; right: 0; background: #0d1326; border-top: 1px solid #1a2040; padding: 16px 24px; display: none; gap: 16px; z-index: 1000; flex-wrap: wrap; }
+    .cookie-banner .text { flex: 1; min-width: 200px; }
+    .cookie-banner .text p { font-size: 0.85em; color: #78909c; }
+    .cookie-banner .text a { color: #4fc3f7; }
+    .cookie-banner .actions { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+    .cookie-banner .btn-accept { background: #4fc3f7; color: #0a0e1a; border: none; padding: 8px 20px; border-radius: 6px; font-weight: 600; cursor: pointer; white-space: nowrap; }
+    .cookie-banner .btn-accept:hover { background: #29b6f6; }
+    .cookie-banner .btn-reject { background: transparent; color: #78909c; border: 1px solid #2a3050; padding: 8px 20px; border-radius: 6px; font-weight: 500; cursor: pointer; white-space: nowrap; }
+    .cookie-banner .btn-reject:hover { border-color: #546e7a; }
+    .cookie-banner .btn-settings { background: transparent; color: #4fc3f7; border: none; padding: 8px 16px; border-radius: 6px; font-weight: 500; cursor: pointer; white-space: nowrap; text-decoration: underline; }
 
     .status-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 6px; }
     .status-dot.online { background: #69f0ae; box-shadow: 0 0 8px rgba(105,240,174,0.4); }
@@ -151,6 +156,7 @@
       .arch-grid { grid-template-columns: 1fr; }
       .newsletter { flex-direction: column; }
       .cookie-banner { flex-direction: column; text-align: center; }
+      .cookie-banner .actions { justify-content: center; }
     }
   </style>
 </head>
@@ -392,8 +398,14 @@
 </div>
 
 <div class="cookie-banner" id="cookieBanner">
-  <p>We use essential cookies only. See our <a href="COOKIE_POLICY.md">Cookie Policy</a> and <a href="PRIVACY_POLICY.md">Privacy Policy</a>.</p>
-  <button class="btn-sm" onclick="document.getElementById('cookieBanner').style.display='none';localStorage.setItem('cookiesAccepted','true')">Accept</button>
+  <div class="text">
+    <p>We use essential cookies for security and functionality. Analytics cookies are optional. See our <a href="COOKIE_POLICY.md">Cookie Policy</a> and <a href="PRIVACY_POLICY.md">Privacy Policy</a>.</p>
+  </div>
+  <div class="actions">
+    <button class="btn-settings" onclick="showCookieSettings()">Customize</button>
+    <button class="btn-reject" onclick="acceptCookies('essential')">Reject All</button>
+    <button class="btn-accept" onclick="acceptCookies('all')">Accept All</button>
+  </div>
 </div>
 
 <div class="toast" id="toast"></div>
@@ -407,7 +419,14 @@ function toggleMenu() {
 }
 
 // Cookie banner
-if (!localStorage.getItem('cookiesAccepted')) {
+function acceptCookies(level) {
+  localStorage.setItem('cookiesConsent', level);
+  document.getElementById('cookieBanner').style.display = 'none';
+}
+function showCookieSettings() {
+  window.location.href = 'COOKIE_POLICY.md';
+}
+if (!localStorage.getItem('cookiesConsent')) {
   document.getElementById('cookieBanner').style.display = 'flex';
 }
 
@@ -461,7 +480,7 @@ async function loadGitHubActivity() {
 
 // Service list
 const services = [
-  {name:'API Gateway', port:'8000', lang:'Kong'},
+  {name:'API Gateway', port:'8000', lang:'Lua'},
   {name:'Auth', port:'8081', lang:'Go'},
   {name:'User', port:'8088', lang:'Go'},
   {name:'Merchant', port:'8092', lang:'Go'},
@@ -482,7 +501,7 @@ document.getElementById('serviceList').innerHTML = services.map(s =>
   `<div class="service-badge"><div class="name">${s.name}</div><div class="port">:${s.port}</div><div class="lang">${s.lang}</div></div>`
 ).join('');
 
-// Form submission (store in localStorage for demo)
+// Form submission — GitHub Issues API first, mailto fallback
 function submitForm() {
   const name = document.getElementById('formName').value.trim();
   const email = document.getElementById('formEmail').value.trim();
@@ -499,9 +518,20 @@ function submitForm() {
   document.getElementById('contactForm').style.display = 'none';
   document.getElementById('formSuccess').style.display = 'block';
   
-  // Open mailto with form data
-  const body = `Name: ${name}\nEmail: ${email}\nType: ${type}\nMessage: ${msg}`;
-  window.location.href = `mailto:partner@roundpenny.com?subject=Partner Inquiry from ${name}&body=${encodeURIComponent(body)}`;
+  const body = `## Partner Inquiry\n\n**Name:** ${name}\n**Email:** ${email}\n**Type:** ${type}\n**Message:** ${msg}`;
+  
+  fetch('https://api.github.com/repos/tmuhammet36-cmd/roundpenny/issues', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      title: `Partner Inquiry: ${name} (${type})`,
+      body: body,
+      labels: ['partner-inquiry']
+    })
+  }).catch(() => {
+    // Fallback to mailto if API fails
+    window.location.href = `mailto:partner@roundpenny.com?subject=Partner Inquiry from ${name}&body=${encodeURIComponent(body)}`;
+  });
 }
 
 function submitNewsletter() {
@@ -512,6 +542,7 @@ function submitNewsletter() {
   localStorage.setItem('newsletterSubs', JSON.stringify(subs));
   document.getElementById('newsletterEmail').value = '';
   showToast('Subscribed! Check your inbox soon.');
+  window.location.href = `mailto:partner@roundpenny.com?subject=Newsletter Signup&body=Email: ${email}`;
 }
 
 // Scroll animations
