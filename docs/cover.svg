@@ -1,0 +1,104 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0a0e1a"/>
+      <stop offset="50%" stop-color="#0f1528"/>
+      <stop offset="100%" stop-color="#0a0e1a"/>
+    </linearGradient>
+    <linearGradient id="glow" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#4fc3f7" stop-opacity="0.15"/>
+      <stop offset="100%" stop-color="#69f0ae" stop-opacity="0.05"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#4fc3f7"/>
+      <stop offset="100%" stop-color="#69f0ae"/>
+    </linearGradient>
+    <linearGradient id="btn" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#4fc3f7"/>
+      <stop offset="100%" stop-color="#29b6f6"/>
+    </linearGradient>
+    <filter id="shadow">
+      <feDropShadow dx="0" dy="2" stdDeviation="4" flood-color="#000" flood-opacity="0.5"/>
+    </filter>
+    <filter id="glowFilter">
+      <feGaussianBlur stdDeviation="60" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="630" fill="url(#bg)"/>
+
+  <!-- Glow effect behind center -->
+  <ellipse cx="600" cy="315" rx="400" ry="250" fill="url(#glow)" filter="url(#glowFilter)"/>
+
+  <!-- Subtle grid pattern -->
+  <g stroke="#1a2040" stroke-width="0.5" opacity="0.4">
+    <line x1="0" y1="100" x2="1200" y2="100"/>
+    <line x1="0" y1="200" x2="1200" y2="200"/>
+    <line x1="0" y1="300" x2="1200" y2="300"/>
+    <line x1="0" y1="400" x2="1200" y2="400"/>
+    <line x1="0" y1="500" x2="1200" y2="500"/>
+    <line x1="200" y1="0" x2="200" y2="630"/>
+    <line x1="400" y1="0" x2="400" y2="630"/>
+    <line x1="600" y1="0" x2="600" y2="630"/>
+    <line x1="800" y1="0" x2="800" y2="630"/>
+    <line x1="1000" y1="0" x2="1000" y2="630"/>
+  </g>
+
+  <!-- Top accent line -->
+  <rect x="0" y="0" width="1200" height="4" fill="url(#accent)"/>
+
+  <!-- Logo icon - stacked coins/rounding abstraction -->
+  <g transform="translate(600, 220)">
+    <!-- Coin stack -->
+    <ellipse cx="0" cy="15" rx="60" ry="12" fill="#69f0ae" opacity="0.3"/>
+    <ellipse cx="0" cy="0" rx="55" ry="10" fill="#4fc3f7" opacity="0.5"/>
+    <ellipse cx="0" cy="-15" rx="50" ry="9" fill="#69f0ae" opacity="0.4"/>
+    <ellipse cx="0" cy="-30" rx="45" ry="8" fill="#4fc3f7" opacity="0.6"/>
+
+    <!-- Arrow up -->
+    <polygon points="0,-65 15,-45 -15,-45" fill="url(#accent)" filter="url(#shadow)"/>
+    <rect x="-4" y="-55" width="8" height="20" fill="url(#accent)" rx="2"/>
+
+    <!-- Center coin detail -->
+    <circle cx="0" cy="-30" r="20" fill="none" stroke="#4fc3f7" stroke-width="1.5" opacity="0.8"/>
+    <text x="0" y="-26" text-anchor="middle" font-size="16" font-weight="800" fill="#4fc3f7" font-family="Inter, sans-serif">$</text>
+  </g>
+
+  <!-- Title -->
+  <text x="600" y="340" text-anchor="middle" font-size="72" font-weight="800" fill="#e0e6f0" font-family="'Inter', 'Segoe UI', sans-serif" letter-spacing="2">
+    Round<tspan fill="#69f0ae">Penny</tspan>
+  </text>
+
+  <!-- Subtitle -->
+  <text x="600" y="385" text-anchor="middle" font-size="24" fill="#90caf9" font-family="'Inter', 'Segoe UI', sans-serif" letter-spacing="4" font-weight="300">
+    ROUND-UP MICRO-INVESTMENT PLATFORM
+  </text>
+
+  <!-- Tagline -->
+  <text x="600" y="425" text-anchor="middle" font-size="16" fill="#546e7a" font-family="'Inter', 'Segoe UI', sans-serif" letter-spacing="1">
+    Spare change investing · Built for scale
+  </text>
+
+  <!-- Divider -->
+  <line x1="480" y1="445" x2="720" y2="445" stroke="url(#accent)" stroke-width="2" opacity="0.6"/>
+
+  <!-- Feature badges -->
+  <g transform="translate(600, 490)">
+    <rect x="-160" y="-18" width="140" height="36" rx="18" fill="#111829" stroke="#1a2040" stroke-width="1"/>
+    <text x="-90" y="5" text-anchor="middle" font-size="13" fill="#90caf9" font-family="'Inter', 'Segoe UI', sans-serif">13 Microservices</text>
+
+    <rect x="-10" y="-18" width="140" height="36" rx="18" fill="#111829" stroke="#1a2040" stroke-width="1"/>
+    <text x="60" y="5" text-anchor="middle" font-size="13" fill="#90caf9" font-family="'Inter', 'Segoe UI', sans-serif">Kafka · PostgreSQL</text>
+
+    <rect x="140" y="-18" width="140" height="36" rx="18" fill="#111829" stroke="#1a2040" stroke-width="1"/>
+    <text x="210" y="5" text-anchor="middle" font-size="13" fill="#90caf9" font-family="'Inter', 'Segoe UI', sans-serif">Kubernetes Ready</text>
+  </g>
+
+  <!-- Bottom accent line -->
+  <rect x="0" y="626" width="1200" height="4" fill="url(#accent)"/>
+
+  <!-- Version -->
+  <text x="1170" y="615" text-anchor="end" font-size="11" fill="#546e7a" font-family="'Inter', 'Segoe UI', sans-serif">v1.0.0</text>
+</svg>
