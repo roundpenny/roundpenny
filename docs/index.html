@@ -107,6 +107,39 @@
     .newsletter input { flex: 1; padding: 12px 16px; background: #060a16; border: 1px solid #1a2040; border-radius: 8px; color: #e0e6f0; font-size: 0.9em; }
     .newsletter input:focus { outline: none; border-color: #4fc3f7; }
 
+    .roadmap { max-width: 800px; margin: 0 auto; }
+    .roadmap-item { display: flex; gap: 24px; margin-bottom: 32px; position: relative; }
+    .roadmap-item::before { content: ''; position: absolute; left: 23px; top: 48px; bottom: -32px; width: 2px; background: #1a2040; }
+    .roadmap-item:last-child::before { display: none; }
+    .roadmap-dot { width: 16px; height: 16px; min-width: 16px; border-radius: 50%; background: #4fc3f7; margin-top: 4px; position: relative; z-index: 1; }
+    .roadmap-dot.completed { background: #69f0ae; }
+    .roadmap-dot.current { background: #4fc3f7; box-shadow: 0 0 12px rgba(79,195,247,0.5); }
+    .roadmap-dot.planned { background: #2a3050; border: 2px solid #4fc3f7; }
+    .roadmap-content { flex: 1; }
+    .roadmap-content .phase { font-size: 0.75em; color: #4fc3f7; font-weight: 600; letter-spacing: 1.5px; }
+    .roadmap-content .phase.completed { color: #69f0ae; }
+    .roadmap-content h3 { font-size: 1.1em; font-weight: 600; margin: 4px 0 8px; }
+    .roadmap-content p { font-size: 0.9em; color: #546e7a; }
+    .roadmap-content ul { list-style: none; padding: 0; margin-top: 8px; }
+    .roadmap-content ul li { font-size: 0.85em; color: #78909c; padding: 4px 0; }
+    .roadmap-content ul li::before { content: "▸ "; color: #4fc3f7; }
+
+    .faq-grid { max-width: 700px; margin: 0 auto; }
+    .faq-item { background: #0d1326; border: 1px solid #1a2040; border-radius: 12px; margin-bottom: 12px; overflow: hidden; transition: border-color 0.2s; }
+    .faq-item:hover { border-color: #2a3050; }
+    .faq-q { padding: 18px 24px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; font-weight: 500; font-size: 0.95em; user-select: none; }
+    .faq-q .arrow { font-size: 0.8em; color: #4fc3f7; transition: transform 0.3s; }
+    .faq-item.open .faq-q .arrow { transform: rotate(180deg); }
+    .faq-a { max-height: 0; padding: 0 24px; overflow: hidden; transition: all 0.3s; font-size: 0.9em; color: #546e7a; line-height: 1.7; }
+    .faq-item.open .faq-a { max-height: 300px; padding: 0 24px 18px; }
+
+    .security-badges { display: flex; justify-content: center; gap: 24px; flex-wrap: wrap; margin-top: 32px; }
+    .security-badge { background: #0d1326; border: 1px solid #1a2040; border-radius: 12px; padding: 24px 32px; text-align: center; min-width: 130px; transition: border-color 0.3s; }
+    .security-badge:hover { border-color: #4fc3f7; }
+    .security-badge .icon { font-size: 2em; margin-bottom: 8px; }
+    .security-badge .name { font-size: 0.8em; font-weight: 600; color: #e0e6f0; }
+    .security-badge .desc { font-size: 0.7em; color: #546e7a; margin-top: 4px; }
+
     footer { text-align: center; padding: 48px 0; border-top: 1px solid #1a2040; }
     footer .footer-links { display: flex; flex-wrap: wrap; justify-content: center; gap: 24px; margin-bottom: 20px; }
     footer .footer-links a { color: #546e7a; text-decoration: none; font-size: 0.85em; transition: color 0.2s; }
@@ -153,6 +186,9 @@
       <a href="#features">Features</a>
       <a href="#architecture">Architecture</a>
       <a href="#services">Services</a>
+      <a href="#roadmap">Roadmap</a>
+      <a href="#faq">FAQ</a>
+      <a href="#security">Security</a>
       <a href="#contact">Contact</a>
     </div>
     <button class="hamburger" onclick="toggleMenu()" aria-label="Menu">
@@ -167,6 +203,9 @@
   <a href="#features" onclick="toggleMenu()">Features</a>
   <a href="#architecture" onclick="toggleMenu()">Architecture</a>
   <a href="#services" onclick="toggleMenu()">Services</a>
+  <a href="#roadmap" onclick="toggleMenu()">Roadmap</a>
+  <a href="#faq" onclick="toggleMenu()">FAQ</a>
+  <a href="#security" onclick="toggleMenu()">Security</a>
   <a href="#contact" onclick="toggleMenu()">Contact</a>
 </div>
 
@@ -269,6 +308,155 @@
     <h2>Services</h2>
     <p class="subtitle">All Go microservices with shared packages</p>
     <div class="services-section" id="serviceList"></div>
+  </section>
+
+  <section id="roadmap">
+    <h2>Roadmap</h2>
+    <p class="subtitle">What's coming next</p>
+    <div class="roadmap">
+      <div class="roadmap-item">
+        <div class="roadmap-dot completed"></div>
+        <div class="roadmap-content">
+          <div class="phase completed">Q1 2026 · COMPLETED</div>
+          <h3>Platform Foundation</h3>
+          <p>Core infrastructure, 15 microservices, Kafka event-driven architecture.</p>
+          <ul>
+            <li>Authentication & user management</li>
+            <li>Round-up engine with real-time processing</li>
+            <li>Wallet, ledger, and payment gateway</li>
+            <li>Admin dashboard & subscription billing</li>
+          </ul>
+        </div>
+      </div>
+      <div class="roadmap-item">
+        <div class="roadmap-dot current"></div>
+        <div class="roadmap-content">
+          <div class="phase">Q2 2026 · IN PROGRESS</div>
+          <h3>Partner Onboarding</h3>
+          <p>White-label API, merchant integrations, and compliance readiness.</p>
+          <ul>
+            <li>Partner portal & self-service onboarding</li>
+            <li>Merchant commission engine</li>
+            <li>SOC 2 Type II certification</li>
+            <li>Multi-currency support (EUR, GBP, TRY)</li>
+          </ul>
+        </div>
+      </div>
+      <div class="roadmap-item">
+        <div class="roadmap-dot planned"></div>
+        <div class="roadmap-content">
+          <div class="phase">Q3 2026 · PLANNED</div>
+          <h3>Mobile & Scale</h3>
+          <p>Native mobile SDKs and advanced investment products.</p>
+          <ul>
+            <li>iOS & Android SDKs</li>
+            <li>Automated portfolio rebalancing</li>
+            <li>Fractional share trading</li>
+            <li>Real-time push notifications</li>
+          </ul>
+        </div>
+      </div>
+      <div class="roadmap-item">
+        <div class="roadmap-dot planned"></div>
+        <div class="roadmap-content">
+          <div class="phase">Q4 2026 · PLANNED</div>
+          <h3>Global Expansion</h3>
+          <p>Regulatory approvals and regional data center deployments.</p>
+          <ul>
+            <li>FINRA / RIA registration (US)</li>
+            <li>EMI license application (UK/EU)</li>
+            <li>APAC data center deployment</li>
+            <li>AI-powered fraud detection v2</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="faq">
+    <h2>Frequently Asked Questions</h2>
+    <p class="subtitle">Everything you need to know about RoundPenny</p>
+    <div class="faq-grid">
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">
+          How does round-up investing work?
+          <span class="arrow">▾</span>
+        </div>
+        <div class="faq-a">Every time a user makes a purchase, RoundPenny rounds up the transaction to the nearest dollar (or your chosen increment) and invests the spare change automatically. For example, a $4.50 coffee becomes $5.00, and $0.50 goes into the user's investment portfolio.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">
+          What does white-label mean?
+          <span class="arrow">▾</span>
+        </div>
+        <div class="faq-a">White-label means you can offer RoundPenny's investment platform under your own brand. We provide the infrastructure, APIs, and compliance framework. Your customers see your brand, not ours.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">
+          How much does it cost?
+          <span class="arrow">▾</span>
+        </div>
+        <div class="faq-a">We offer flexible pricing: a free tier for basic round-up investing, Premium at $2.99/month with automatic rebalancing, and Pro at $9.99/month with fractional shares and priority support. Enterprise pricing is available for volume partners.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">
+          Is the platform compliant with regulations?
+          <span class="arrow">▾</span>
+        </div>
+        <div class="faq-a">Yes. RoundPenny is built with compliance in mind — SOC 2 Type II audit-ready, GDPR compliant, CCPA compliant, and built to meet FINRA/RIA requirements for the US market. We use bank-grade encryption (AES-256) and maintain full audit trails.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">
+          How do I integrate RoundPenny?
+          <span class="arrow">▾</span>
+        </div>
+        <div class="faq-a">Integrate via our REST API with webhooks for real-time events. We provide SDKs for Go, JavaScript, and Python. Typical integration takes 2-4 weeks. Contact our partnerships team for API documentation and sandbox access.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">
+          What infrastructure do I need?
+          <span class="arrow">▾</span>
+        </div>
+        <div class="faq-a">None. RoundPenny is fully managed. We handle all infrastructure — 15 microservices, Kafka, PostgreSQL, Redis, monitoring, and security. You focus on your product, we handle the investment backend.</div>
+      </div>
+    </div>
+  </section>
+
+  <section id="security">
+    <h2>Security & Compliance</h2>
+    <p class="subtitle">Enterprise-grade protection for your users' assets</p>
+    <div class="security-badges">
+      <div class="security-badge">
+        <div class="icon">🔐</div>
+        <div class="name">SOC 2 Type II</div>
+        <div class="desc">Audit-ready controls</div>
+      </div>
+      <div class="security-badge">
+        <div class="icon">🛡️</div>
+        <div class="name">GDPR</div>
+        <div class="desc">Full compliance</div>
+      </div>
+      <div class="security-badge">
+        <div class="icon">📋</div>
+        <div class="name">CCPA</div>
+        <div class="desc">Privacy protected</div>
+      </div>
+      <div class="security-badge">
+        <div class="icon">🔑</div>
+        <div class="name">AES-256</div>
+        <div class="desc">Encryption at rest</div>
+      </div>
+      <div class="security-badge">
+        <div class="icon">🌐</div>
+        <div class="name">TLS 1.3</div>
+        <div class="desc">Encryption in transit</div>
+      </div>
+      <div class="security-badge">
+        <div class="icon">📝</div>
+        <div class="name">Audit Trail</div>
+        <div class="desc">Immutable logs</div>
+      </div>
+    </div>
   </section>
 
   <section id="contact">
@@ -431,6 +619,11 @@ function submitNewsletter() {
   window.location.href = `mailto:partner@roundpenny.com?subject=Newsletter Signup&body=Email: ${email}`;
 }
 
+// FAQ accordion
+function toggleFaq(el) {
+  el.parentElement.classList.toggle('open');
+}
+
 // Scroll animations
 const observer = new IntersectionObserver((entries) => {
   entries.forEach(e => {
@@ -438,7 +631,7 @@ const observer = new IntersectionObserver((entries) => {
   });
 }, { threshold: 0.1 });
 
-document.querySelectorAll('.feature-card, .metric').forEach(el => observer.observe(el));
+document.querySelectorAll('.feature-card, .metric, .roadmap-item, .faq-item, .security-badge, .about-grid .card').forEach(el => observer.observe(el));
 
 </script>
 
