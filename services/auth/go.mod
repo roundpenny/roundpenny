@@ -26,7 +26,7 @@ require (
 	github.com/jackc/pgpassfile v1.0.0 // indirect
 	github.com/jackc/pgservicefile v0.0.0-20221227161230-091c0ba34f0a // indirect
 	github.com/jackc/puddle/v2 v2.2.1 // indirect
-	golang.org/x/crypto v0.51.0 // indirect
+	golang.org/x/crypto v0.52.0 // indirect
 	golang.org/x/sync v0.20.0 // indirect
 	golang.org/x/text v0.37.0 // indirect
 )
@@ -66,8 +66,8 @@ replace (
 	github.com/roundup-platform/pkg/crypto => ../../pkg/crypto
 	github.com/roundup-platform/pkg/db => ../../pkg/db
 	github.com/roundup-platform/pkg/email => ../../pkg/email
-	github.com/roundup-platform/pkg/idempotency => ../../pkg/idempotency
 	github.com/roundup-platform/pkg/event => ../../pkg/event
+	github.com/roundup-platform/pkg/idempotency => ../../pkg/idempotency
 	github.com/roundup-platform/pkg/kafka => ../../pkg/kafka
 	github.com/roundup-platform/pkg/kyc => ../../pkg/kyc
 	github.com/roundup-platform/pkg/monitoring => ../../pkg/monitoring
