@@ -4,7 +4,7 @@
 
 [![Go](https://img.shields.io/badge/Go-1.26-blue?logo=go)](https://go.dev)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
-[![CI](https://img.shields.io/badge/CI-GitHub%20Actions-brightgreen?logo=github)](.github/workflows/ci.yml)
+[![CI](https://github.com/tmuhammet36-cmd/roundpenny/actions/workflows/ci.yml/badge.svg)](.github/workflows/ci.yml)
 [![Docker](https://img.shields.io/badge/Docker-Compose-2496ED?logo=docker)](docker-compose.yml)
 [![K8s](https://img.shields.io/badge/K8s-Helm-326CE5?logo=kubernetes)](deploy/helm/)
 [![Terraform](https://img.shields.io/badge/Terraform-AWS-7B42BC?logo=terraform)](deploy/terraform/)
@@ -296,4 +296,14 @@ Run yourself: `./scripts/run-load-test-prod.sh`
 
 ## License
 
-MIT
+MIT — see [LICENSE](LICENSE).
+
+---
+
+<p align="center">
+  <a href="CONTRIBUTING.md">Contributing</a> ·
+  <a href="CODE_OF_CONDUCT.md">Code of Conduct</a> ·
+  <a href="SECURITY.md">Security</a> ·
+  <a href=".github/ISSUE_TEMPLATE/bug_report.md">Report Bug</a> ·
+  <a href=".github/ISSUE_TEMPLATE/feature_request.md">Request Feature</a>
+</p>
