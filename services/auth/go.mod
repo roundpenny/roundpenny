@@ -66,8 +66,8 @@ replace (
 	github.com/roundup-platform/pkg/crypto => ../../pkg/crypto
 	github.com/roundup-platform/pkg/db => ../../pkg/db
 	github.com/roundup-platform/pkg/email => ../../pkg/email
-	github.com/roundup-platform/pkg/idempotency => ../../pkg/idempotency
 	github.com/roundup-platform/pkg/event => ../../pkg/event
+	github.com/roundup-platform/pkg/idempotency => ../../pkg/idempotency
 	github.com/roundup-platform/pkg/kafka => ../../pkg/kafka
 	github.com/roundup-platform/pkg/kyc => ../../pkg/kyc
 	github.com/roundup-platform/pkg/monitoring => ../../pkg/monitoring
