@@ -60,10 +60,18 @@
     .contact .email { font-size: 1.3em; font-weight: 700; color: #4fc3f7; }
 
     footer { text-align: center; padding: 40px 0; border-top: 1px solid #1a2040; font-size: 0.85em; color: #546e7a; }
+    footer a:hover { color: #4fc3f7 !important; }
+
+    .cookie-banner { position: fixed; bottom: 0; left: 0; right: 0; background: #111829; border-top: 1px solid #1a2040; padding: 16px 24px; display: none; justify-content: space-between; align-items: center; gap: 16px; z-index: 1000; }
+    .cookie-banner p { font-size: 0.85em; color: #90caf9; }
+    .cookie-banner a { color: #4fc3f7; }
+    .cookie-banner .btn-sm { background: #4fc3f7; color: #0a0e1a; border: none; padding: 8px 20px; border-radius: 6px; font-weight: 600; cursor: pointer; white-space: nowrap; }
+    .cookie-banner .btn-sm:hover { background: #29b6f6; }
 
     @media (max-width: 768px) {
       .hero h1 { font-size: 2em; }
       nav .nav-links { display: none; }
+      .cookie-banner { flex-direction: column; text-align: center; }
     }
   </style>
 </head>
@@ -174,15 +182,34 @@
     <div class="contact">
       <h2 style="margin-bottom:16px">Let's Build Together</h2>
       <p>Ready to add round-up investing to your platform?<br>We're actively onboarding neobank and HCM partners.</p>
-      <div class="email">Lumox · 05456674110</div>
+      <div class="email">partner@roundpenny.com</div>
       <p style="margin-top:20px;font-size:0.85em;color:#546e7a">Response within 24 hours</p>
     </div>
   </section>
 
   <footer>
+    <div style="display:flex;flex-wrap:wrap;justify-content:center;gap:24px;margin-bottom:16px">
+      <a href="US_PRICING.md" style="color:#90caf9;text-decoration:none;font-size:0.9em">Pricing</a>
+      <a href="TERMS_OF_SERVICE.md" style="color:#90caf9;text-decoration:none;font-size:0.9em">Terms of Service</a>
+      <a href="PRIVACY_POLICY.md" style="color:#90caf9;text-decoration:none;font-size:0.9em">Privacy Policy</a>
+      <a href="COOKIE_POLICY.md" style="color:#90caf9;text-decoration:none;font-size:0.9em">Cookie Policy</a>
+      <a href="https://github.com/tmuhammet36-cmd/roundpenny" style="color:#90caf9;text-decoration:none;font-size:0.9em">GitHub</a>
+    </div>
     &copy; 2026 RoundPenny. All rights reserved.
   </footer>
 
 </div>
+
+<div class="cookie-banner" id="cookieBanner">
+  <p>We use essential cookies only. See our <a href="COOKIE_POLICY.md">Cookie Policy</a> and <a href="PRIVACY_POLICY.md">Privacy Policy</a>.</p>
+  <button class="btn-sm" onclick="document.getElementById('cookieBanner').style.display='none';localStorage.setItem('cookiesAccepted','true')">Accept</button>
+</div>
+
+<script>
+  if (!localStorage.getItem('cookiesAccepted')) {
+    document.getElementById('cookieBanner').style.display = 'flex';
+  }
+</script>
+
 </body>
 </html>
