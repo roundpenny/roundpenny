@@ -4,7 +4,7 @@
 
 [![Go](https://img.shields.io/badge/Go-1.26-blue?logo=go)](https://go.dev)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
-[![CI](https://github.com/tmuhammet36-cmd/roundpenny/actions/workflows/ci.yml/badge.svg)](.github/workflows/ci.yml)
+[![CI](https://github.com/roundpenny/roundpenny/actions/workflows/ci.yml/badge.svg)](.github/workflows/ci.yml)
 [![Docker](https://img.shields.io/badge/Docker-Compose-2496ED?logo=docker)](docker-compose.yml)
 [![K8s](https://img.shields.io/badge/K8s-Helm-326CE5?logo=kubernetes)](deploy/helm/)
 [![Terraform](https://img.shields.io/badge/Terraform-AWS-7B42BC?logo=terraform)](deploy/terraform/)

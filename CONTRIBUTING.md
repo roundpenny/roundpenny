@@ -3,7 +3,7 @@
 ## Getting Started
 
 ```bash
-git clone https://github.com/tmuhammet36-cmd/roundpenny.git
+git clone https://github.com/roundpenny/roundpenny.git
 cd roundpenny
 docker compose up -d   # start dependencies
 make test              # run all tests

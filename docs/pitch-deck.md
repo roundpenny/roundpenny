@@ -309,9 +309,9 @@ Operations (10%)
 
 **Contact:** roundpennny@outlook.com
 
-**GitHub:** [github.com/tmuhammet36-cmd/roundpenny](https://github.com/tmuhammet36-cmd/roundpenny) *(private repo available on request)*
+**GitHub:** [github.com/roundpenny/roundpenny](https://github.com/roundpenny/roundpenny) *(private repo available on request)*
 
-**Site:** [tmuhammet36-cmd.github.io/roundpenny](https://tmuhammet36-cmd.github.io/roundpenny/)
+**Site:** [roundpenny.github.io/roundpenny](https://roundpenny.github.io/roundpenny/)
 
 ---
 

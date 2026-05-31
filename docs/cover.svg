@@ -69,7 +69,7 @@
   <g transform="translate(600, 575)">
     <rect x="-145" y="-14" width="290" height="28" rx="14" fill="#1a2040" opacity="0.5"/>
     <text x="0" y="4" text-anchor="middle" font-size="11" fill="#546e7a" font-family="'SF Mono', 'Fira Code', 'Consolas', monospace" letter-spacing="1">
-      <tspan fill="#4fc3f7">◆</tspan> github.com/tmuhammet36-cmd/roundpenny
+      <tspan fill="#4fc3f7">◆</tspan> github.com/roundpenny/roundpenny
     </text>
   </g>
 </svg>
