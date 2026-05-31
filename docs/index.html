@@ -566,18 +566,22 @@
     <h2>Partner With Us</h2>
     <p class="subtitle">Ready to add round-up investing to your platform?</p>
     <div class="contact">
-      <div class="contact-form" id="contactForm">
+      <form class="contact-form" id="contactForm" action="https://formsubmit.co/roundpennny@outlook.com" method="POST">
+        <input type="hidden" name="_subject" value="RoundPenny Partner Inquiry">
+        <input type="hidden" name="_template" value="table">
+        <input type="hidden" name="_captcha" value="false">
+        <input type="hidden" name="_next" value="https://tmuhammet36-cmd.github.io/roundpenny/#success">
         <div class="form-group">
           <label>Name / Company</label>
-          <input type="text" id="formName" placeholder="Your name or company">
+          <input type="text" name="Name" id="formName" placeholder="Your name or company" required>
         </div>
         <div class="form-group">
           <label>Email</label>
-          <input type="email" id="formEmail" placeholder="you@company.com">
+          <input type="email" name="Email" id="formEmail" placeholder="you@company.com" required>
         </div>
         <div class="form-group">
           <label>I'm a...</label>
-          <select id="formType">
+          <select name="Type" id="formType" required>
             <option value="">Select...</option>
             <option value="neobank">Neobank / Fintech</option>
             <option value="hcm">HCM / Payroll Platform</option>
@@ -588,15 +592,15 @@
         </div>
         <div class="form-group">
           <label>Message</label>
-          <textarea id="formMessage" placeholder="Tell us about your use case..."></textarea>
+          <textarea name="Message" id="formMessage" placeholder="Tell us about your use case..." required></textarea>
         </div>
-        <button class="btn-primary" style="width:100%;justify-content:center;border:none;cursor:pointer" onclick="submitForm()">
+        <button type="submit" class="btn-primary" style="width:100%;justify-content:center;border:none;cursor:pointer">
           Send Message →
         </button>
         <p style="text-align:center;color:#546e7a;font-size:0.8em;margin-top:12px">
           Or email us directly at <a href="mailto:roundpennny@outlook.com" style="color:#4fc3f7">roundpennny@outlook.com</a>
         </p>
-      </div>
+      </form>
       <div class="form-success" id="formSuccess">
         <div class="check">✓</div>
         <h3>Message Sent!</h3>
@@ -608,10 +612,14 @@
   <section id="newsletter">
     <h2>Stay Updated</h2>
     <p class="subtitle">Product updates, feature releases, and partnership news</p>
-    <div class="newsletter">
-      <input type="email" id="newsletterEmail" placeholder="your@email.com">
-      <button class="btn-primary" style="border:none;cursor:pointer" onclick="submitNewsletter()">Subscribe</button>
-    </div>
+    <form class="newsletter" action="https://formsubmit.co/roundpennny@outlook.com" method="POST">
+      <input type="hidden" name="_subject" value="RoundPenny Newsletter Signup">
+      <input type="hidden" name="_template" value="table">
+      <input type="hidden" name="_captcha" value="false">
+      <input type="hidden" name="_next" value="https://tmuhammet36-cmd.github.io/roundpenny/#success">
+      <input type="email" name="Email" id="newsletterEmail" placeholder="your@email.com" required>
+      <button type="submit" class="btn-primary" style="border:none;cursor:pointer">Subscribe</button>
+    </form>
   </section>
 
   <footer>
@@ -659,6 +667,14 @@ if (!localStorage.getItem('cookiesConsent')) {
   document.getElementById('cookieBanner').style.display = 'flex';
 }
 
+// Show success message on redirect from FormSubmit
+if (window.location.hash === '#success') {
+  const form = document.getElementById('contactForm');
+  const success = document.getElementById('formSuccess');
+  if (form && success) { form.style.display = 'none'; success.style.display = 'block'; }
+  window.location.hash = '';
+}
+
 // Toast notification
 function showToast(msg) {
   const t = document.getElementById('toast');
@@ -689,43 +705,6 @@ const services = [
 document.getElementById('serviceList').innerHTML = services.map(s =>
   `<div class="service-badge"><div class="name">${s.name}</div><div class="port">:${s.port}</div><div class="lang">${s.lang}</div></div>`
 ).join('');
-
-// Form submission
-function submitForm() {
-  const name = document.getElementById('formName').value.trim();
-  const email = document.getElementById('formEmail').value.trim();
-  const type = document.getElementById('formType').value;
-  const msg = document.getElementById('formMessage').value.trim();
-  if (!name || !email || !type) { showToast('Please fill in all required fields'); return; }
-  if (!email.includes('@')) { showToast('Please enter a valid email'); return; }
-  
-  const submission = { name, email, type, msg, date: new Date().toISOString() };
-  const existing = JSON.parse(localStorage.getItem('partnerSubmissions') || '[]');
-  existing.push(submission);
-  localStorage.setItem('partnerSubmissions', JSON.stringify(existing));
-  
-  document.getElementById('contactForm').style.display = 'none';
-  document.getElementById('formSuccess').style.display = 'block';
-  
-  const body = `Name: ${name}%0D%0AEmail: ${email}%0D%0AType: ${type}%0D%0AMessage: ${msg}`;
-  window.location.href = `mailto:roundpennny@outlook.com?subject=Partner Inquiry from ${name}&body=${body}`;
-}
-
-function submitNewsletter() {
-  const email = document.getElementById('newsletterEmail').value.trim();
-  if (!email || !email.includes('@')) { showToast('Please enter a valid email'); return; }
-  const subs = JSON.parse(localStorage.getItem('newsletterSubs') || '[]');
-  if (!subs.includes(email)) subs.push(email);
-  localStorage.setItem('newsletterSubs', JSON.stringify(subs));
-  document.getElementById('newsletterEmail').value = '';
-  showToast('Subscribed! Check your inbox soon.');
-  window.location.href = `mailto:roundpennny@outlook.com?subject=Newsletter Signup&body=Email: ${email}`;
-}
-
-// FAQ accordion
-function toggleFaq(el) {
-  el.parentElement.classList.toggle('open');
-}
 
 // Scroll animations
 const observer = new IntersectionObserver((entries) => {
