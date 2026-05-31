@@ -594,7 +594,7 @@
           Send Message →
         </button>
         <p style="text-align:center;color:#546e7a;font-size:0.8em;margin-top:12px">
-          Or email us directly at <a href="mailto:partner@roundpenny.com" style="color:#4fc3f7">partner@roundpenny.com</a>
+          Or email us directly at <a href="mailto:roundpenny@outlook.com" style="color:#4fc3f7">roundpenny@outlook.com</a>
         </p>
       </div>
       <div class="form-success" id="formSuccess">
@@ -708,7 +708,7 @@ function submitForm() {
   document.getElementById('formSuccess').style.display = 'block';
   
   const body = `Name: ${name}%0D%0AEmail: ${email}%0D%0AType: ${type}%0D%0AMessage: ${msg}`;
-  window.location.href = `mailto:partner@roundpenny.com?subject=Partner Inquiry from ${name}&body=${body}`;
+  window.location.href = `mailto:roundpenny@outlook.com?subject=Partner Inquiry from ${name}&body=${body}`;
 }
 
 function submitNewsletter() {
@@ -719,7 +719,7 @@ function submitNewsletter() {
   localStorage.setItem('newsletterSubs', JSON.stringify(subs));
   document.getElementById('newsletterEmail').value = '';
   showToast('Subscribed! Check your inbox soon.');
-  window.location.href = `mailto:partner@roundpenny.com?subject=Newsletter Signup&body=Email: ${email}`;
+  window.location.href = `mailto:roundpenny@outlook.com?subject=Newsletter Signup&body=Email: ${email}`;
 }
 
 // FAQ accordion

@@ -34,4 +34,4 @@ make build             # build all services
 
 ## Questions
 
-Open a GitHub issue or reach out to `partner@roundpenny.com`.
+Open a GitHub issue or reach out to `roundpenny@outlook.com`.
