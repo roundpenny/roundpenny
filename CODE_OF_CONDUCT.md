@@ -30,7 +30,7 @@ Examples of unacceptable behavior:
 ## Enforcement
 
 Project maintainers are responsible for clarifying and enforcing our standards.
-Instances of abusive behavior may be reported to `roundpenny@outlook.com`.
+Instances of abusive behavior may be reported to `roundpennny@outlook.com`.
 All complaints will be reviewed and investigated promptly and fairly.
 
 ## Attribution
