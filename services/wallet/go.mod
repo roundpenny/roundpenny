@@ -5,6 +5,7 @@ go 1.26.3
 require (
 	github.com/google/uuid v1.6.0
 	github.com/jackc/pgx/v5 v5.5.5
+	github.com/roundup-platform/pkg/config v0.0.0
 	github.com/roundup-platform/pkg/cors v0.0.0
 	github.com/roundup-platform/pkg/db v0.0.0
 	github.com/roundup-platform/pkg/event v0.0.0
@@ -12,7 +13,6 @@ require (
 	github.com/roundup-platform/pkg/monitoring v0.0.0
 	github.com/roundup-platform/pkg/tls v0.0.0
 	github.com/roundup-platform/pkg/tracing v0.0.0
-	github.com/roundup-platform/pkg/config v0.0.0
 )
 
 require (
@@ -52,6 +52,7 @@ require (
 )
 
 replace (
+	github.com/roundup-platform/pkg/config => ../../pkg/config
 	github.com/roundup-platform/pkg/cors => ../../pkg/cors
 	github.com/roundup-platform/pkg/db => ../../pkg/db
 	github.com/roundup-platform/pkg/event => ../../pkg/event
@@ -59,5 +60,4 @@ replace (
 	github.com/roundup-platform/pkg/monitoring => ../../pkg/monitoring
 	github.com/roundup-platform/pkg/tls => ../../pkg/tls
 	github.com/roundup-platform/pkg/tracing => ../../pkg/tracing
-	github.com/roundup-platform/pkg/config => ../../pkg/config
 )
