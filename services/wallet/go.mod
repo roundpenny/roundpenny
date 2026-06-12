@@ -5,6 +5,7 @@ go 1.26.3
 require (
 	github.com/google/uuid v1.6.0
 	github.com/jackc/pgx/v5 v5.5.5
+	github.com/roundup-platform/pkg/config v0.0.0
 	github.com/roundup-platform/pkg/cors v0.0.0
 	github.com/roundup-platform/pkg/db v0.0.0
 	github.com/roundup-platform/pkg/event v0.0.0
@@ -12,7 +13,6 @@ require (
 	github.com/roundup-platform/pkg/monitoring v0.0.0
 	github.com/roundup-platform/pkg/tls v0.0.0
 	github.com/roundup-platform/pkg/tracing v0.0.0
-	github.com/roundup-platform/pkg/config v0.0.0
 )
 
 require (
@@ -40,11 +40,11 @@ require (
 	go.opentelemetry.io/otel/sdk v1.44.0 // indirect
 	go.opentelemetry.io/otel/trace v1.44.0 // indirect
 	go.opentelemetry.io/proto/otlp v1.10.0 // indirect
-	golang.org/x/crypto v0.51.0 // indirect
+	golang.org/x/crypto v0.53.0 // indirect
 	golang.org/x/net v0.55.0 // indirect
-	golang.org/x/sync v0.20.0 // indirect
-	golang.org/x/sys v0.45.0 // indirect
-	golang.org/x/text v0.37.0 // indirect
+	golang.org/x/sync v0.21.0 // indirect
+	golang.org/x/sys v0.46.0 // indirect
+	golang.org/x/text v0.38.0 // indirect
 	google.golang.org/genproto/googleapis/api v0.0.0-20260526163538-3dc84a4a5aaa // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20260526163538-3dc84a4a5aaa // indirect
 	google.golang.org/grpc v1.81.1 // indirect
@@ -52,6 +52,7 @@ require (
 )
 
 replace (
+	github.com/roundup-platform/pkg/config => ../../pkg/config
 	github.com/roundup-platform/pkg/cors => ../../pkg/cors
 	github.com/roundup-platform/pkg/db => ../../pkg/db
 	github.com/roundup-platform/pkg/event => ../../pkg/event
@@ -59,5 +60,4 @@ replace (
 	github.com/roundup-platform/pkg/monitoring => ../../pkg/monitoring
 	github.com/roundup-platform/pkg/tls => ../../pkg/tls
 	github.com/roundup-platform/pkg/tracing => ../../pkg/tracing
-	github.com/roundup-platform/pkg/config => ../../pkg/config
 )
